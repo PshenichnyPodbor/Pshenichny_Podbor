@@ -549,7 +549,6 @@ h1.display{
               <p class="result-summary" id="resultSummary">Собираю итог…</p>
             </div>
             <div id="phoneCards"></div>
-            <div class="err-note hidden" id="errNote">Не удалось связаться с ИИ — показан быстрый разбор по твоим ответам.</div>
 
             <div class="social-block">
               <p class="social-title">Хочешь узнать больше об этих моделях, увидеть тесты и обзоры?</p>
@@ -626,7 +625,7 @@ const QUESTIONS = [
 {
   q:"Какую роль для тебя играет камера?",
   opts:[
-    {t:"Главный критерий выбора", w:{pixel:3, iphone:2}},
+    {t:"Главный критерий выбора", w:{pixel:3, iphone:2, vivo:2}},
     {t:"Важна, но без фанатизма", w:{samsung:1}},
     {t:"Нужна только для дела", w:{budget:1}},
     {t:"Вообще не важна", w:{gaming:1, budget:1}}
@@ -644,7 +643,7 @@ const QUESTIONS = [
 {
   q:"Важен ли для тебя уровень защиты от воды и пыли (IP)?",
   opts:[
-    {t:"Обязательно IP68 (полная защита)", w:{iphone:2, samsung:2, pixel:1}},
+    {t:"Обязательно IP68 (полная защита)", w:{iphone:2, samsung:2, pixel:1, huawei:1, honor:1}},
     {t:"Нужен настоящий «бронефон»", w:{gaming:2}},
     {t:"Не так важно", w:{xiaomi:1, budget:1}}
   ]
@@ -655,7 +654,7 @@ const QUESTIONS = [
     {t:"Работа и мессенджеры", w:{iphone:1, pixel:1}},
     {t:"Соцсети и видео", w:{xiaomi:1, samsung:1}},
     {t:"Игры", w:{gaming:3}},
-    {t:"Съёмка фото и видео контента", w:{pixel:2, iphone:2}},
+    {t:"Съёмка фото и видео контента", w:{pixel:2, iphone:2, vivo:2, huawei:1}},
     {t:"Навигация, музыка, всего понемногу", w:{budget:1}}
   ]
 },
@@ -670,8 +669,8 @@ const QUESTIONS = [
 {
   q:"Что важнее в батарее?",
   opts:[
-    {t:"Максимальная автономность", w:{xiaomi:2, samsung:1}},
-    {t:"Скорость зарядки", w:{xiaomi:2}},
+    {t:"Максимальная автономность", w:{xiaomi:2, samsung:1, vivo:1}},
+    {t:"Скорость зарядки", w:{xiaomi:2, oneplus:2}},
     {t:"Долговечность аккумулятора", w:{iphone:1, pixel:1}},
     {t:"Просто чтобы хватало на день", w:{budget:1}}
   ]
@@ -679,10 +678,24 @@ const QUESTIONS = [
 {
   q:"Есть ли у тебя предпочтения по бренду?",
   opts:[
-    {t:"Apple", w:{iphone:5}},
-    {t:"Samsung", w:{samsung:5}},
-    {t:"Xiaomi / Redmi", w:{xiaomi:5}},
-    {t:"Google Pixel", w:{pixel:5}},
+    {t:"Apple", w:{}},
+    {t:"Samsung", w:{}},
+    {t:"Xiaomi / Redmi / POCO", w:{}},
+    {t:"Google Pixel", w:{}},
+    {t:"Motorola", w:{}},
+    {t:"OnePlus", w:{}},
+    {t:"Realme", w:{}},
+    {t:"OPPO", w:{}},
+    {t:"Vivo", w:{}},
+    {t:"Honor", w:{}},
+    {t:"Huawei", w:{}},
+    {t:"Nothing", w:{}},
+    {t:"Sony Xperia", w:{}},
+    {t:"Игровой (ASUS ROG / RedMagic / Legion)", w:{}},
+    {t:"Tecno", w:{}},
+    {t:"Infinix", w:{}},
+    {t:"ZTE / Nubia", w:{}},
+    {t:"Защищённый, неубиваемый", w:{}},
     {t:"Без разницы, важны характеристики", w:{}}
   ]
 },
@@ -699,10 +712,10 @@ const QUESTIONS = [
 {
   q:"Твой главный приоритет?",
   opts:[
-    {t:"Надёжная рабочая лошадка", w:{samsung:1, iphone:1}},
-    {t:"Топ за свои деньги", w:{xiaomi:2}},
-    {t:"Самый мощный флагман", w:{iphone:1, samsung:1, gaming:1}},
-    {t:"Лучший для фото и видео", w:{pixel:2}},
+    {t:"Надёжная рабочая лошадка", w:{samsung:1, iphone:1, honor:1}},
+    {t:"Топ за свои деньги", w:{xiaomi:2, honor:1}},
+    {t:"Самый мощный флагман", w:{iphone:1, samsung:1, gaming:1, oneplus:1}},
+    {t:"Лучший для фото и видео", w:{pixel:2, vivo:2}},
     {t:"Компактный и удобный", w:{iphone:1}},
     {t:"Стильный аксессуар", w:{samsung:1, iphone:1}}
   ]
@@ -720,7 +733,8 @@ const QUESTIONS = [
 
 const BUCKET_LABEL = {
   iphone:"iPhone", samsung:"Samsung", xiaomi:"Xiaomi/Redmi",
-  pixel:"Google Pixel", gaming:"Игровой флагман", budget:"Бюджетный Android"
+  pixel:"Google Pixel", gaming:"Игровой флагман", budget:"Бюджетный Android",
+  honor:"Honor", oneplus:"OnePlus", vivo:"Vivo/OPPO", huawei:"Huawei"
 };
 
 let current = 0;
@@ -804,21 +818,267 @@ function goBack(){
   }
 }
 
-/* ============ SCORING ============ */
-function computeScores(){
-  const scores = {iphone:0, samsung:0, xiaomi:0, pixel:0, gaming:0, budget:0};
-  answers.forEach((ansIdx, qi)=>{
-    if(ansIdx===null) return;
-    const w = QUESTIONS[qi].opts[ansIdx].w || {};
-    Object.keys(w).forEach(k=> scores[k]+=w[k]);
-  });
-  return scores;
-}
-function topBuckets(scores, n){
-  return Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,n).map(e=>e[0]);
+/* ============ ПОЛНАЯ БАЗА СМАРТФОНОВ (сезон 2026) ============
+   priceTier: 0=до15000₽, 1=15-30к, 2=30-60к, 3=60-100к, 4=от100к/флагман без ограничений
+   size: compact | standard | large | fold
+   display: oled | ips        refresh: числовое значение Гц       ltpo: адаптивная частота
+   cameraScore/gamingScore: 0-3      ip68/rugged/pwmSafe/fastCharge/enduranceBattery/longevitySupport: bool
+   brand: используется для прямого совпадения с ответом на вопрос о бренде
+   tags: value | flagship | allround | compact | stylish | fold | work | social | gaming | photo
+*/
+const PHONES = [
+// APPLE
+{name:"iPhone SE (2022)", brand:"apple", priceTier:0, size:"compact", display:"ips", refresh:60, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, longevitySupport:true, tags:["work","value","compact"]},
+{name:"iPhone 17e", brand:"apple", priceTier:1, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["work","value","compact"]},
+{name:"iPhone 16", brand:"apple", priceTier:2, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["allround","compact"]},
+{name:"iPhone 15 Plus", brand:"apple", priceTier:2, size:"large", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["allround"]},
+{name:"iPhone 17", brand:"apple", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, longevitySupport:true, tags:["allround"]},
+{name:"iPhone 16 Plus", brand:"apple", priceTier:3, size:"large", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:2, ip68:true, longevitySupport:true, tags:["allround"]},
+{name:"iPhone 16 Pro Max", brand:"apple", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+{name:"iPhone 17 Pro", brand:"apple", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+{name:"iPhone 17 Pro Max", brand:"apple", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+// SAMSUNG
+{name:"Samsung Galaxy A16 5G", brand:"samsung", priceTier:0, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, longevitySupport:true, tags:["value","work"]},
+{name:"Samsung Galaxy M36", brand:"samsung", priceTier:0, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, enduranceBattery:true, tags:["value"]},
+{name:"Samsung Galaxy A36 5G", brand:"samsung", priceTier:1, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value"]},
+{name:"Samsung Galaxy A56 5G", brand:"samsung", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","allround"]},
+{name:"Samsung Galaxy S25 FE", brand:"samsung", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, tags:["value","flagship"]},
+{name:"Samsung Galaxy S26", brand:"samsung", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","allround"]},
+{name:"Samsung Galaxy S25+", brand:"samsung", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","allround"]},
+{name:"Samsung Galaxy Z Flip7", brand:"samsung", priceTier:3, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","fold","compact"]},
+{name:"Samsung Galaxy Z Fold7", brand:"samsung", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["stylish","fold","flagship"]},
+{name:"Samsung Galaxy Z Fold Special Edition", brand:"samsung", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["stylish","fold","flagship"]},
+{name:"Samsung Galaxy S26 Ultra", brand:"samsung", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, tags:["flagship","photo"]},
+// XIAOMI / REDMI / POCO
+{name:"Redmi A5", brand:"xiaomi", priceTier:0, size:"compact", display:"ips", refresh:60, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Redmi Note 14", brand:"xiaomi", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["value"]},
+{name:"Redmi Note 15 Pro+", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, fastCharge:true, enduranceBattery:true, tags:["value","allround"]},
+{name:"POCO X8 Pro", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"POCO F7 Pro", brand:"xiaomi", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"Xiaomi 15", brand:"xiaomi", priceTier:3, size:"compact", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:3, ip68:true, tags:["flagship","compact"]},
+{name:"Xiaomi 16 Pro", brand:"xiaomi", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:3, ip68:true, tags:["flagship"]},
+{name:"Xiaomi Mix Flip", brand:"xiaomi", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, tags:["stylish","fold"]},
+{name:"Xiaomi 15 Ultra", brand:"xiaomi", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, tags:["flagship","photo"]},
+{name:"Xiaomi 16 Ultra", brand:"xiaomi", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, tags:["flagship","photo"]},
+// MOTOROLA
+{name:"Moto E15", brand:"motorola", priceTier:0, size:"compact", display:"ips", refresh:60, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Moto G55 5G", brand:"motorola", priceTier:0, size:"standard", display:"ips", refresh:120, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value"]},
+{name:"Moto G85", brand:"motorola", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["value","stylish"]},
+{name:"Motorola Edge 60 Neo", brand:"motorola", priceTier:1, size:"compact", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["stylish","compact"]},
+{name:"Motorola Edge 60 Pro", brand:"motorola", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish"]},
+{name:"Motorola Razr 50", brand:"motorola", priceTier:2, size:"fold", display:"oled", refresh:90, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","fold","compact"]},
+{name:"Motorola Edge 60 Ultra", brand:"motorola", priceTier:3, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, tags:["stylish","flagship"]},
+{name:"Motorola Razr 2026 (60 Ultra)", brand:"motorola", priceTier:3, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["stylish","fold","flagship"]},
+// GOOGLE PIXEL
+{name:"Google Pixel 8a", brand:"pixel", priceTier:1, size:"compact", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","photo","compact"]},
+{name:"Google Pixel 9a", brand:"pixel", priceTier:2, size:"compact", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","photo","compact"]},
+{name:"Google Pixel 9 Pro", brand:"pixel", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+{name:"Google Pixel 10", brand:"pixel", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, longevitySupport:true, tags:["allround","photo"]},
+{name:"Google Pixel 10 Pro Fold", brand:"pixel", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["stylish","fold","flagship"]},
+{name:"Google Pixel 10 Pro XL", brand:"pixel", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+// ONEPLUS
+{name:"OnePlus Nord CE5 Lite", brand:"oneplus", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"OnePlus Nord 5", brand:"oneplus", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, fastCharge:true, tags:["value"]},
+{name:"OnePlus 13R", brand:"oneplus", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:true, fastCharge:true, tags:["value","gaming"]},
+{name:"OnePlus 12", brand:"oneplus", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, fastCharge:true, tags:["value","flagship"]},
+{name:"OnePlus 14 Pro", brand:"oneplus", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:3, ip68:true, fastCharge:true, tags:["value","flagship"]},
+{name:"OnePlus 15", brand:"oneplus", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:3, ip68:true, fastCharge:true, tags:["flagship"]},
+{name:"OnePlus Open 2", brand:"oneplus", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:false, tags:["stylish","fold","flagship"]},
+// REALME
+{name:"Realme C67", brand:"realme", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Realme 12 Pro+", brand:"realme", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"Realme 14 Pro+", brand:"realme", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"Realme GT6", brand:"realme", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"Realme GT7 Pro", brand:"realme", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:3, ip68:false, enduranceBattery:true, tags:["value","gaming"]},
+{name:"Realme GT8", brand:"realme", priceTier:3, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:3, ip68:true, tags:["flagship","gaming"]},
+// OPPO
+{name:"OPPO A5", brand:"oppo", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:true, tags:["value"]},
+{name:"OPPO Reno13", brand:"oppo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"OPPO Reno14", brand:"oppo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"OPPO Find X8", brand:"oppo", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+{name:"OPPO Find X9 Ultra", brand:"oppo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// VIVO
+{name:"Vivo V40", brand:"vivo", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value","stylish","photo"]},
+{name:"Vivo V50", brand:"vivo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"Vivo X100 Pro", brand:"vivo", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+{name:"Vivo X200 Pro", brand:"vivo", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+{name:"Vivo X210", brand:"vivo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
+// NOTHING & CMF
+{name:"CMF Phone 2", brand:"nothing", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value","stylish"]},
+{name:"Nothing Phone (2a)", brand:"nothing", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","value"]},
+{name:"Nothing Phone (2)", brand:"nothing", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["stylish"]},
+{name:"Nothing Phone (3)", brand:"nothing", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, tags:["stylish","flagship"]},
+// HONOR
+{name:"Honor X7b", brand:"honor", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, pwmSafe:true, tags:["value"]},
+{name:"Honor 400", brand:"honor", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, pwmSafe:true, tags:["value","stylish"]},
+{name:"Honor 200 Pro", brand:"honor", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, pwmSafe:true, tags:["value","stylish","photo"]},
+{name:"Honor Magic7 Lite", brand:"honor", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, rugged:true, pwmSafe:true, tags:["value"]},
+{name:"Honor Magic6 Pro", brand:"honor", priceTier:2, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, pwmSafe:true, enduranceBattery:true, tags:["flagship","photo"]},
+{name:"Honor Magic7 Pro", brand:"honor", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, pwmSafe:true, enduranceBattery:true, tags:["flagship","photo"]},
+{name:"Honor Magic V3", brand:"honor", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, pwmSafe:true, tags:["stylish","fold","flagship"]},
+// HUAWEI
+{name:"Huawei nova 13", brand:"huawei", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:0, ip68:false, tags:["value","stylish"]},
+{name:"Huawei Mate 60", brand:"huawei", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, enduranceBattery:true, tags:["allround"]},
+{name:"Huawei Mate 70", brand:"huawei", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:1, ip68:true, enduranceBattery:true, tags:["allround","flagship"]},
+{name:"Huawei Pura 80", brand:"huawei", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:1, ip68:true, tags:["flagship","photo"]},
+{name:"Huawei Pura 80 Ultra", brand:"huawei", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:1, ip68:true, tags:["flagship","photo"]},
+// SONY
+{name:"Sony Xperia 10 VI", brand:"sony", priceTier:1, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value","compact"]},
+{name:"Sony Xperia 10 VII", brand:"sony", priceTier:2, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value","compact"]},
+{name:"Sony Xperia 1 VII", brand:"sony", priceTier:4, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// TECNO
+{name:"Tecno Spark 30", brand:"tecno", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Tecno Camon 40", brand:"tecno", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"Tecno Phantom V Fold", brand:"tecno", priceTier:2, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","fold","value"]},
+// INFINIX
+{name:"Infinix Smart 9", brand:"infinix", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Infinix Note 50", brand:"infinix", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value"]},
+{name:"Infinix Zero 40", brand:"infinix", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, tags:["value","photo"]},
+{name:"Infinix GT 30 Pro", brand:"infinix", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, tags:["value","gaming"]},
+// ZTE / NUBIA (не игровая линейка)
+{name:"Nubia Z70 Ultra", brand:"nubia", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// ЗАЩИЩЁННЫЕ (RUGGED)
+{name:"CAT S75", brand:"rugged", priceTier:2, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"Blackview BV9300", brand:"rugged", priceTier:1, size:"large", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, enduranceBattery:true, tags:["value"]},
+{name:"Blackview Hero 10", brand:"rugged", priceTier:3, size:"fold", display:"oled", refresh:90, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, rugged:true, tags:["stylish","fold","value"]},
+{name:"Ulefone Armor 27 Pro", brand:"rugged", priceTier:2, size:"large", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"AGM Glory G2", brand:"rugged", priceTier:2, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"Doogee V Max", brand:"rugged", priceTier:2, size:"large", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, enduranceBattery:true, tags:["value"]},
+{name:"Oukitel WP35", brand:"rugged", priceTier:1, size:"large", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, enduranceBattery:true, tags:["value"]},
+// ИГРОВЫЕ
+{name:"ZTE RedMagic 9S Pro", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]},
+{name:"RedMagic 10 Pro", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
+{name:"Lenovo Legion Y700", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
+{name:"ASUS ROG Phone 9", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
+{name:"ASUS ROG Phone 9 Pro", brand:"gaming", priceTier:4, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:2, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]}
+];
+
+const BRAND_BY_ANSWER = ["apple","samsung","xiaomi","pixel","motorola","oneplus","realme","oppo","vivo","honor","huawei","nothing","sony","gaming","tecno","infinix","nubia","rugged"];
+const USAGE_TAG = ["work","social","gaming","photo","allround"];
+
+function scorePhone(p){
+  let s = 0;
+  const budget = answers[0], size = answers[1], display = answers[3], refresh = answers[4],
+        camera = answers[5], gaming = answers[6], protection = answers[7], usage = answers[8],
+        eyes = answers[9], battery = answers[10], brand = answers[11], memory = answers[12],
+        priority = answers[13], freq = answers[14];
+
+  // Бюджет — самый весомый фактор, отклонение сильно штрафуется
+  if(budget !== null){
+    if(budget === 4){ s += p.priceTier * 0.6; }
+    else {
+      const diff = Math.abs(p.priceTier - budget);
+      s += Math.max(-12, 6 - diff * 4);
+    }
+  }
+  // Размер
+  if(size !== null && size !== 4){
+    const sizeMap = ["compact","standard","large","fold"];
+    if(p.size === sizeMap[size]) s += 3;
+  }
+  // Дисплей
+  if(display === 0 && p.display === "oled") s += 1;
+  if(display === 1 && p.display === "ips") s += 2;
+  // Частота обновления
+  if(refresh !== null){
+    if(refresh === 0 && p.refresh <= 60) s += 1;
+    if(refresh === 1 && p.refresh >= 90 && p.refresh < 120) s += 1;
+    if(refresh === 2 && p.refresh >= 120) s += 1;
+    if(refresh === 3 && p.ltpo) s += 2;
+  }
+  // Камера
+  if(camera === 0) s += p.cameraScore * 2.5;
+  else if(camera === 1) s += p.cameraScore * 1.2;
+  else if(camera === 2 && p.cameraScore <= 1) s += 1;
+  else if(camera === 3 && p.cameraScore === 0) s += 0.5;
+  // Игры
+  if(gaming === 0) s += p.gamingScore * 2.5;
+  else if(gaming === 1) s += p.gamingScore * 1;
+  else if(gaming === 2) s += p.gamingScore * 0.5;
+  // Защита / прочность
+  if(protection === 0){ s += p.ip68 ? 2 : -1; }
+  if(protection === 1){ s += p.rugged ? 6 : -2; }
+  // Назначение
+  if(usage !== null && p.tags.includes(USAGE_TAG[usage])) s += 1.5;
+  // Чувствительность глаз
+  if(eyes === 0 && p.pwmSafe) s += 2;
+  // Батарея
+  if(battery === 0 && p.enduranceBattery) s += 2;
+  if(battery === 1 && p.fastCharge) s += 2;
+  if(battery === 2 && p.longevitySupport) s += 1;
+  // Бренд — прямое совпадение
+  if(brand !== null && brand < BRAND_BY_ANSWER.length && p.brand === BRAND_BY_ANSWER[brand]) s += 6;
+  // Память
+  if((memory === 2 || memory === 3) && p.priceTier >= 3) s += 0.5;
+  // Главный приоритет
+  if(priority === 0 && p.tags.includes("allround")) s += 2;
+  if(priority === 1 && p.tags.includes("value")) s += 2.5;
+  if(priority === 2 && p.tags.includes("flagship")) s += 2;
+  if(priority === 3 && p.cameraScore >= 2) s += 2;
+  if(priority === 4 && p.size === "compact") s += 2;
+  if(priority === 5 && p.tags.includes("stylish")) s += 2;
+  // Частота смены смартфона
+  if(freq === 0 && p.tags.includes("flagship")) s += 1;
+  if(freq === 2 && p.longevitySupport) s += 2;
+  if(freq === 3 && (p.rugged || p.tags.includes("value"))) s += 1;
+
+  return s;
 }
 
-/* ============ ANALYSIS + AI CALL ============ */
+function buildResult(){
+  const scored = PHONES.map(p => ({ phone: p, score: scorePhone(p) }))
+                        .sort((a, b) => b.score - a.score);
+
+  const brandChosen = answers[11] !== null && answers[11] < BRAND_BY_ANSWER.length;
+  const picked = [];
+  const seenBrand = new Set();
+  for(const item of scored){
+    if(picked.length >= 3) break;
+    if(!brandChosen && seenBrand.has(item.phone.brand)) continue; // без явного бренда — разнообразим подборку
+    picked.push(item.phone);
+    seenBrand.add(item.phone.brand);
+  }
+  // если из-за фильтра разнообразия не набралось 3 — дозаполняем лучшими оставшимися
+  if(picked.length < 3){
+    for(const item of scored){
+      if(picked.length >= 3) break;
+      if(!picked.includes(item.phone)) picked.push(item.phone);
+    }
+  }
+
+  const taglineFor = (p) => {
+    if(p.tags.includes("flagship")) return "Флагман";
+    if(p.tags.includes("value")) return "Топ за свои деньги";
+    if(p.tags.includes("gaming")) return "Для игр";
+    if(p.tags.includes("photo")) return "Сильная камера";
+    if(p.tags.includes("stylish")) return "Стильный выбор";
+    if(p.rugged) return "Неубиваемый";
+    return "Хороший баланс";
+  };
+  const reasonFor = (p) => {
+    const bits = [];
+    if(p.cameraScore >= 2) bits.push("сильная камера");
+    if(p.gamingScore >= 2) bits.push("подходит для игр");
+    if(p.rugged) bits.push("защищённый корпус для экстремальных условий");
+    else if(p.ip68) bits.push("защита от воды и пыли IP68");
+    if(p.enduranceBattery) bits.push("ёмкая батарея");
+    if(p.fastCharge) bits.push("быстрая зарядка");
+    if(p.ltpo) bits.push("плавный адаптивный экран");
+    if(p.longevitySupport) bits.push("долгая поддержка обновлений");
+    if(p.pwmSafe) bits.push("безопасен для уставших глаз");
+    if(p.tags.includes("stylish")) bits.push("запоминающийся дизайн");
+    if(bits.length === 0) bits.push("сбалансированные характеристики за свою цену");
+    return "Подходит по твоим ответам: " + bits.slice(0,3).join(", ") + ".";
+  };
+
+  return {
+    ok: true,
+    summary: "По твоим ответам мы сопоставили бюджет, характеристики и приоритеты со всей базой моделей 2026 года — вот три, что подошли лучше всего.",
+    phones: picked.map(p => ({ name: p.name, tagline: taglineFor(p), reason: reasonFor(p) }))
+  };
+}
+
+/* ============ ANALYSIS (rule-based, работает офлайн от ИИ, без внешних запросов) ============ */
 function beginAnalysis(){
   show('view-analyzing');
   const bar = document.getElementById('analyzeBar');
@@ -830,71 +1090,15 @@ function beginAnalysis(){
     "Формирую топ-3 подборки"
   ];
   let i=0;
-  const interval = setInterval(()=>{ i=(i+1)%msgs.length; sub.textContent = msgs[i]; }, 900);
+  const interval = setInterval(()=>{ i=(i+1)%msgs.length; sub.textContent = msgs[i]; }, 700);
 
-  fetchAIResult().finally(()=>{
+  aiResultCache = buildResult();
+
+  setTimeout(()=>{
     clearInterval(interval);
     bar.style.width='100%';
-    setTimeout(()=> show('view-gate'), 500);
-  });
-}
-
-async function fetchAIResult(){
-  const scores = computeScores();
-  const ranked = topBuckets(scores, 3);
-  const answerLines = QUESTIONS.map((q,i)=>{
-    const a = answers[i];
-    return `${i+1}. ${q.q} → ${a!==null ? q.opts[a].t : '—'}`;
-  }).join('\n');
-
-  const prompt = `Ты — эксперт по смартфонам. Ниже ответы пользователя на тест из 15 вопросов (на русском языке). На их основе подбери 3 конкретные, реально существующие модели смартфонов (актуальные на сегодня), которые лучше всего подходят под эти ответы. Учитывай бюджет, размер, камеру, батарею, бренд и главный приоритет.
-
-Ответы пользователя:
-${answerLines}
-
-Похоже, пользователю ближе всего категория: ${ranked.map(r=>BUCKET_LABEL[r]).join(', ')}.
-
-Верни СТРОГО валидный JSON без пояснений, без markdown, без \`\`\`, в формате:
-{"summary":"1-2 предложения с общим выводом о том, что нужно пользователю, на русском языке, тепло и по-человечески","phones":[{"name":"Название модели","tagline":"короткий ярлык из 2-4 слов, почему она в топе","reason":"2-3 предложения объяснения, почему эта модель подходит именно этому пользователю, на русском"}]} 
-Массив phones должен содержать ровно 3 объекта, от наиболее подходящего к менее.`;
-
-  try{
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    const data = await response.json();
-    const textBlock = (data.content || []).find(b=>b.type==='text');
-    if(!textBlock) throw new Error('no text');
-    const clean = textBlock.text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
-    if(!parsed.phones || !Array.isArray(parsed.phones)) throw new Error('bad shape');
-    aiResultCache = { ok:true, summary: parsed.summary, phones: parsed.phones };
-  }catch(e){
-    aiResultCache = fallbackResult(scores, ranked);
-  }
-}
-
-function fallbackResult(scores, ranked){
-  const templates = {
-    iphone:{name:"iPhone (актуальное поколение)", tagline:"Баланс и экосистема", reason:"Подходит тем, кто ценит стабильную работу, долгую поддержку обновлений и хорошую камеру без лишней возни с настройками."},
-    samsung:{name:"Samsung Galaxy S-серии", tagline:"Флагманские возможности", reason:"Яркий экран, гибкие настройки и мощное железо — хороший выбор, если важен универсальный флагман на каждый день."},
-    xiaomi:{name:"Xiaomi / Redmi Note-серии", tagline:"Топ за свои деньги", reason:"Отличное соотношение цены и характеристик: быстрая зарядка, ёмкая батарея и достойный экран без переплаты."},
-    pixel:{name:"Google Pixel", tagline:"Лучшая камера в классе", reason:"Заточен под фото и видео благодаря вычислительной фотографии, при этом остаётся компактным и удобным."},
-    gaming:{name:"Игровой флагман (ROG Phone / RedMagic)", tagline:"Мощность для игр", reason:"Мощный процессор, охлаждение и высокая частота обновления экрана — то, что нужно для тяжёлых игр."},
-    budget:{name:"Бюджетный Android (Redmi / Realme / Poco)", tagline:"Простой и практичный", reason:"Закрывает базовые задачи — звонки, мессенджеры, соцсети — без переплаты за то, чем вы не пользуетесь."}
-  };
-  const phones = ranked.map(r=>templates[r]);
-  return {
-    ok:false,
-    summary:"По твоим ответам мы собрали три модели, которые лучше всего закрывают заявленные приоритеты.",
-    phones
-  };
+    setTimeout(()=> show('view-gate'), 400);
+  }, 2200);
 }
 
 function onSubscribeClicked(){
@@ -927,7 +1131,6 @@ function renderResult(){
     `;
     wrap.appendChild(card);
   });
-  document.getElementById('errNote').classList.toggle('hidden', res.ok !== false);
 }
 
 function escapeHtml(s){
