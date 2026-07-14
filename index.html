@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Какой смартфон тебе подходит?</title>
+<script data-goatcounter="https://pshenichny-podbor.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
@@ -750,7 +751,16 @@ function setBattery(pct){
   document.getElementById('battPct').textContent = Math.round(pct)+'%';
 }
 
+function trackEvent(name){
+  try{
+    if(window.goatcounter && typeof window.goatcounter.count === 'function'){
+      window.goatcounter.count({ path: name, title: name, event: true });
+    }
+  }catch(e){ /* аналитика не должна ломать тест */ }
+}
+
 function startQuiz(){
+  trackEvent('quiz-start');
   show('view-quiz');
   renderQuestion();
 }
@@ -806,6 +816,7 @@ function selectOption(idx){
       renderQuestion();
     } else {
       setBattery(100);
+      trackEvent('quiz-complete');
       beginAnalysis();
     }
   }, 320);
@@ -1102,16 +1113,19 @@ function beginAnalysis(){
 }
 
 function onSubscribeClicked(){
+  trackEvent('subscribe-click');
   window.open('https://t.me/pshenichny_Tech', '_blank', 'noopener');
   document.getElementById('getResultBtn').classList.remove('hidden');
   document.getElementById('subHint').textContent = 'Если уже подписан — жми кнопку ниже';
 }
 
 function verifySub(){
+  trackEvent('get-result-click');
   show('view-verifying');
   setTimeout(()=>{
     renderResult();
     show('view-result');
+    trackEvent('result-shown');
   }, 1900);
 }
 
