@@ -355,6 +355,17 @@ h1.display{
 .btn[disabled]{opacity:.55; cursor:not-allowed;}
 .gate-actions{display:flex; flex-direction:column; gap:10px; margin-top:auto;}
 .hint{font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:10px; line-height:1.5;}
+.return-banner{
+  background:var(--tg-soft);
+  border:1.5px solid var(--tg);
+  border-radius:14px;
+  padding:12px 14px;
+  font-size:12.5px;
+  line-height:1.55;
+  color:var(--ink);
+  text-align:center;
+  margin-top:2px;
+}
 
 /* result */
 .result-scroll{overflow-y:auto; flex:1; min-height:0; padding-right:2px;}
@@ -527,6 +538,9 @@ h1.display{
           </div>
           <div class="gate-actions">
             <button class="btn btn-tg" id="tgLink" onclick="onSubscribeClicked()">Подписаться на канал</button>
+            <div class="return-banner hidden" id="returnBanner">
+              📲 Telegram открылся в другом окне.<br>Подписался? Верни это окно: смахни вверх и выбери браузер (или нажми «Назад») — и жми кнопку ниже.
+            </div>
             <button class="btn btn-ghost hidden" id="getResultBtn" onclick="verifySub()">Я подписался! Получить результат</button>
             <p class="hint" id="subHint">Кнопка получения результата появится здесь после перехода в канал</p>
           </div>
@@ -1116,6 +1130,7 @@ function onSubscribeClicked(){
   trackEvent('subscribe-click');
   window.open('https://telegram.me/pshenichny_Tech', '_blank', 'noopener');
   document.getElementById('getResultBtn').classList.remove('hidden');
+  document.getElementById('returnBanner').classList.remove('hidden');
   document.getElementById('subHint').textContent = 'Если уже подписан — жми кнопку ниже';
 }
 
