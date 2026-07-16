@@ -9,29 +9,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
 :root{
-  --bg:#EEF0F4;
-  --bg-2:#E3E7EF;
-  --ink:#14171F;
-  --ink-soft:#6B7280;
-  --white:#FFFFFF;
-  --coral:#FF5A36;
-  --coral-soft:#FFE4DC;
+  --bg:#0B0B10;
+  --bg-2:#18181F;
+  --ink:#F4F1EA;
+  --ink-soft:#9A94A6;
+  --white:#15151C;
+  --coral:#FF9D2E;
+  --coral-soft:rgba(255,157,46,0.16);
   --tg:#2AABEE;
-  --tg-soft:#DFF1FD;
-  --ok:#1FAE63;
-  --line:#E3E5EA;
+  --tg-soft:rgba(42,171,238,0.16);
+  --ok:#3DD68C;
+  --line:rgba(255,255,255,0.10);
   --radius:28px;
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
 }
-*{box-sizing:border-box;}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
 body{
   min-height:100vh;
   background:
-    radial-gradient(60% 50% at 18% 8%, rgba(255,90,54,0.10), transparent 60%),
-    radial-gradient(55% 45% at 85% 92%, rgba(42,171,238,0.12), transparent 60%),
+    radial-gradient(60% 50% at 18% 8%, rgba(255,157,46,0.16), transparent 60%),
+    radial-gradient(55% 45% at 85% 92%, rgba(42,171,238,0.10), transparent 60%),
     var(--bg);
   font-family:'Inter', sans-serif;
   color:var(--ink);
@@ -95,6 +95,28 @@ h1.display{
   box-shadow:
     0 40px 80px -30px rgba(20,23,31,0.45),
     0 2px 0 rgba(255,255,255,0.06) inset;
+  transition:width .5s cubic-bezier(.2,.8,.2,1), border-radius .5s ease, padding-bottom .5s ease, margin-bottom .5s ease;
+}
+.phone.laptop-mode{
+  width:520px;
+  border-radius:22px 22px 8px 8px;
+  padding-bottom:14px;
+  margin-bottom:22px;
+}
+.phone.laptop-mode::after{
+  content:"";
+  position:absolute;
+  left:50%; bottom:-22px; transform:translateX(-50%);
+  width:112%;
+  height:20px;
+  background:linear-gradient(180deg,#22232C,#15151B);
+  border-radius:0 0 14px 14px;
+  box-shadow:0 10px 18px -8px rgba(20,23,31,0.5);
+}
+.phone.laptop-mode .island{
+  width:8px; height:8px; border-radius:50%;
+  top:12px;
+  background:#3A3B45;
 }
 .phone::before{
   content:"";
@@ -115,6 +137,10 @@ h1.display{
   overflow:hidden;
   display:flex;
   flex-direction:column;
+  transition:border-radius .5s ease;
+}
+.phone.laptop-mode .screen{
+  border-radius:12px;
 }
 .statusbar{
   display:flex;
@@ -133,6 +159,7 @@ h1.display{
   width:96px; height:26px;
   background:#0F1015;
   border-radius:20px;
+  transition:width .4s ease, height .4s ease, top .4s ease, background .4s ease;
 }
 .battery{
   display:flex; align-items:center; gap:5px;
@@ -264,6 +291,36 @@ h1.display{
   border-radius:100px;
   display:flex; align-items:center; gap:6px;
 }
+.category-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:8px;
+}
+.category-card{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  background:var(--bg-2);
+  border:1.5px solid var(--line);
+  border-radius:18px;
+  padding:22px 12px;
+  cursor:pointer;
+  outline:none;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:border-color .15s, background .15s, transform .1s;
+}
+.category-card:hover{border-color:var(--coral); background:var(--coral-soft);}
+.category-card:active{transform:scale(.97);}
+.category-icon{width:34px; height:34px;}
+.category-label{
+  font-family:'Space Grotesk';
+  font-weight:700;
+  font-size:14px;
+  color:var(--ink);
+}
 
 /* question */
 .qcounter{
@@ -299,6 +356,9 @@ h1.display{
   font-weight:500;
   color:var(--ink);
   cursor:pointer;
+  outline:none;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
   transition:border-color .15s, background .15s, transform .1s;
 }
 .option:hover{border-color:var(--coral); background:var(--coral-soft);}
@@ -351,7 +411,7 @@ h1.display{
   width:220px; height:5px; background:var(--bg-2); border-radius:100px; overflow:hidden;
 }
 .progress-bar-inner{
-  height:100%; width:0%; background:linear-gradient(90deg,var(--coral),#FF8A5C);
+  height:100%; width:0%; background:linear-gradient(90deg,var(--coral),#FFC24B);
   border-radius:100px; transition:width 2.4s cubic-bezier(.3,.7,.2,1);
 }
 
@@ -424,7 +484,7 @@ h1.display{
 }
 .phone-card .rank{
   position:absolute; top:-9px; left:14px;
-  background:var(--ink); color:#fff;
+  background:var(--coral); color:#1A0F00;
   font-family:'JetBrains Mono'; font-size:10.5px; font-weight:700;
   padding:3px 8px; border-radius:100px;
 }
@@ -498,9 +558,9 @@ h1.display{
 <div class="stage">
 
   <div class="headline-col headline-wrap">
-    <div class="eyebrow"><span class="dot"></span> Подбор смартфона · ИИ</div>
-    <h1 class="display">Какой смартфон тебе действительно подходит?</h1>
-    <p class="sub">Пройди тест из 15 вопросов — и получи персональную подборку моделей, собранную под твои привычки, бюджет и приоритеты.</p>
+    <div class="eyebrow"><span class="dot"></span> Подбор техники · умный алгоритм</div>
+    <h1 class="display">Какой гаджет тебе действительно подходит?</h1>
+    <p class="sub">Пройди тест из 15 вопросов — и получи персональную подборку смартфона или ноутбука, собранную под твои привычки, бюджет и приоритеты.</p>
     <div class="side-strip">
       <div class="spec-row"><span class="k"></span> Результат открывается после подписки на канал</div>
       <div class="spec-row"><span class="k"></span> ~2 минуты, без регистрации</div>
@@ -522,8 +582,8 @@ h1.display{
 
       <div class="screen-body">
 
-        <!-- INTRO -->
-        <div class="view" id="view-intro">
+        <!-- CATEGORY SELECT -->
+        <div class="view" id="view-category">
           <div class="intro-hero">
             <svg viewBox="0 0 120 70" class="intro-hero-svg">
               <rect x="8" y="14" width="34" height="56" rx="8" fill="var(--bg)" stroke="var(--line)" stroke-width="2" transform="rotate(-8 25 42)"/>
@@ -537,8 +597,43 @@ h1.display{
             <span class="intro-badge">Без регистрации</span>
             <span class="intro-badge">Актуальные модели 2026</span>
           </div>
-          <div class="intro-title">Какой смартфон тебе подходит?</div>
-          <div class="intro-sub">Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твой бюджет и задачи.</div>
+          <div class="intro-title">Что подбираем?</div>
+          <div class="intro-sub">Выбери, что хочешь подобрать — дальше 15 быстрых вопросов и честная подборка под твой бюджет.</div>
+          <div class="category-grid">
+            <button class="category-card" onclick="selectCategory('phone')">
+              <svg class="category-icon" viewBox="0 0 40 40" fill="none">
+                <rect x="13" y="4" width="14" height="32" rx="4" stroke="var(--coral)" stroke-width="2.2"/>
+                <line x1="17" y1="31.5" x2="23" y2="31.5" stroke="var(--coral)" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+              <span class="category-label">Смартфон</span>
+            </button>
+            <button class="category-card" onclick="selectCategory('laptop')">
+              <svg class="category-icon" viewBox="0 0 40 40" fill="none">
+                <rect x="6" y="8" width="28" height="18" rx="2.5" stroke="var(--coral)" stroke-width="2.2"/>
+                <path d="M3 30h34l-3 4H6l-3-4z" stroke="var(--coral)" stroke-width="2.2" stroke-linejoin="round"/>
+              </svg>
+              <span class="category-label">Ноутбук</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- INTRO -->
+        <div class="view hidden" id="view-intro">
+          <div class="intro-hero">
+            <svg viewBox="0 0 120 70" class="intro-hero-svg">
+              <rect x="8" y="14" width="34" height="56" rx="8" fill="var(--bg)" stroke="var(--line)" stroke-width="2" transform="rotate(-8 25 42)"/>
+              <rect x="43" y="4" width="34" height="56" rx="8" fill="var(--coral-soft)" stroke="var(--coral)" stroke-width="2"/>
+              <rect x="78" y="14" width="34" height="56" rx="8" fill="var(--tg-soft)" stroke="var(--tg)" stroke-width="2" transform="rotate(8 95 42)"/>
+              <circle cx="60" cy="30" r="9" fill="var(--coral)"/>
+              <path d="M56 30l3 3 6-7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="intro-badges">
+            <span class="intro-badge">Без регистрации</span>
+            <span class="intro-badge">Актуальные модели 2026</span>
+          </div>
+          <div class="intro-title" id="introTitle">Какой смартфон тебе подходит?</div>
+          <div class="intro-sub" id="introSub">Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твой бюджет и задачи.</div>
           <div class="stat-grid">
             <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-label">Время</div><div class="stat-value">2 минуты</div></div>
             <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-label">Формат</div><div class="stat-value">15 вопросов</div></div>
@@ -547,7 +642,7 @@ h1.display{
           </div>
           <div style="margin-top:auto;">
             <button class="btn btn-coral" onclick="startQuiz()">Начать тест</button>
-            <p class="hint" style="margin-top:12px;">Не переплачивай за бренд — получи честную подборку из всех актуальных смартфонов.</p>
+            <p class="hint" id="introFooter" style="margin-top:12px;">Не переплачивай за бренд — получи честную подборку из всех актуальных смартфонов.</p>
           </div>
         </div>
 
@@ -636,7 +731,7 @@ h1.display{
 <script>
 /* ================= QUESTION DATA ================= */
 // each option: {t: text, w: {bucket: points, ...}}
-const QUESTIONS = [
+const QUESTIONS_PHONE = [
 {
   q:"Какой бюджет ты рассматриваешь?",
   opts:[
@@ -792,14 +887,164 @@ const QUESTIONS = [
 }
 ];
 
+const QUESTIONS_LAPTOP = [
+{
+  q:"Какой бюджет ты рассматриваешь на ноутбук?",
+  opts:[
+    {t:"До 40 000 ₽"},
+    {t:"40 000–80 000 ₽"},
+    {t:"80 000–150 000 ₽"},
+    {t:"150 000–250 000 ₽"},
+    {t:"Бюджет не важен, главное качество"}
+  ]
+},
+{
+  q:"Какой размер экрана предпочитаешь?",
+  opts:[
+    {t:"Компактный (до 13\")"},
+    {t:"Стандартный (14\"–15.6\")"},
+    {t:"Большой (16\" и больше)"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Какая операционная система нужна?",
+  opts:[
+    {t:"Windows"},
+    {t:"macOS (Apple)"},
+    {t:"Без разницы, любая"},
+    {t:"Linux (для разработки)"}
+  ]
+},
+{
+  q:"Насколько важен вес и мобильность?",
+  opts:[
+    {t:"Очень важно, ношу с собой каждый день"},
+    {t:"Важно, но не критично"},
+    {t:"Не важно, обычно стоит на столе"}
+  ]
+},
+{
+  q:"Для чего в основном нужен ноутбук?",
+  opts:[
+    {t:"Учёба и офисные задачи"},
+    {t:"Работа с текстом, таблицами, почтой"},
+    {t:"Программирование и разработка"},
+    {t:"Дизайн, монтаж видео, 3D"},
+    {t:"Игры"},
+    {t:"Всего понемногу"}
+  ]
+},
+{
+  q:"Собираешься играть в требовательные игры?",
+  opts:[
+    {t:"Да, в тяжёлые AAA-игры"},
+    {t:"Да, но в нетребовательные"},
+    {t:"Иногда, в браузерные/казуальные"},
+    {t:"Не собираюсь"}
+  ]
+},
+{
+  q:"Насколько важна точность цветопередачи экрана?",
+  opts:[
+    {t:"Критично важна (фото, видео, дизайн)"},
+    {t:"Желательна, но не критично"},
+    {t:"Не важна"}
+  ]
+},
+{
+  q:"Что важнее по автономности?",
+  opts:[
+    {t:"Максимальное время работы от батареи"},
+    {t:"Не так критично, обычно рядом розетка"},
+    {t:"Быстрая зарядка важнее длительности"}
+  ]
+},
+{
+  q:"Сколько оперативной памяти нужно?",
+  opts:[
+    {t:"8 ГБ хватит"},
+    {t:"16 ГБ"},
+    {t:"32 ГБ и больше"},
+    {t:"Не разбираюсь, на твоё усмотрение"}
+  ]
+},
+{
+  q:"Какой объём накопителя нужен?",
+  opts:[
+    {t:"256 ГБ"},
+    {t:"512 ГБ"},
+    {t:"1 ТБ и больше"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Нужна ли дискретная видеокарта?",
+  opts:[
+    {t:"Да, для игр или тяжёлого рендера"},
+    {t:"Было бы неплохо, но не обязательно"},
+    {t:"Не нужна, хватит встроенной"}
+  ]
+},
+{
+  q:"Есть ли предпочтения по бренду?",
+  opts:[
+    {t:"Apple"},
+    {t:"Dell"},
+    {t:"HP"},
+    {t:"Lenovo"},
+    {t:"ASUS"},
+    {t:"Acer"},
+    {t:"MSI"},
+    {t:"Huawei"},
+    {t:"Xiaomi"},
+    {t:"Microsoft Surface"},
+    {t:"Samsung"},
+    {t:"Razer (игровой)"},
+    {t:"Без разницы, важны характеристики"}
+  ]
+},
+{
+  q:"Насколько важна прочность корпуса?",
+  opts:[
+    {t:"Очень важна, часто беру с собой в поездки"},
+    {t:"Средне, пользуюсь аккуратно"},
+    {t:"Не важна, стоит дома"}
+  ]
+},
+{
+  q:"Твой главный приоритет?",
+  opts:[
+    {t:"Надёжность для работы"},
+    {t:"Лучшая цена за характеристики"},
+    {t:"Максимальная производительность"},
+    {t:"Тонкий и лёгкий"},
+    {t:"Для творчества и дизайна"},
+    {t:"Игровая мощность"}
+  ]
+},
+{
+  q:"Как часто меняешь ноутбук?",
+  opts:[
+    {t:"Раз в 1–2 года"},
+    {t:"Раз в 3–4 года"},
+    {t:"Раз в 5 лет и дольше"},
+    {t:"Когда сломается"}
+  ]
+}
+];
+
+function Q(){ return category === 'laptop' ? QUESTIONS_LAPTOP : QUESTIONS_PHONE; }
+
 const BUCKET_LABEL = {
   iphone:"iPhone", samsung:"Samsung", xiaomi:"Xiaomi/Redmi",
   pixel:"Google Pixel", gaming:"Игровой флагман", budget:"Бюджетный Android",
   honor:"Honor", oneplus:"OnePlus", vivo:"Vivo/OPPO", huawei:"Huawei"
 };
 
+let category = null;
 let current = 0;
-let answers = new Array(QUESTIONS.length).fill(null);
+let answers = [];
 let aiResultCache = null;
 
 function show(id){
@@ -819,27 +1064,54 @@ function trackEvent(name){
   }catch(e){ /* аналитика не должна ломать тест */ }
 }
 
+const INTRO_COPY = {
+  phone: {
+    title: "Какой смартфон тебе подходит?",
+    sub: "Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твой бюджет и задачи.",
+    footer: "Не переплачивай за бренд — получи честную подборку из всех актуальных смартфонов."
+  },
+  laptop: {
+    title: "Какой ноутбук тебе подходит?",
+    sub: "Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твои задачи и бюджет.",
+    footer: "Не переплачивай за лишнее — получи честную подборку из всех актуальных ноутбуков."
+  }
+};
+
+function selectCategory(cat){
+  category = cat;
+  trackEvent('category-select-' + cat);
+  const copy = INTRO_COPY[cat];
+  document.getElementById('introTitle').textContent = copy.title;
+  document.getElementById('introSub').textContent = copy.sub;
+  document.getElementById('introFooter').textContent = copy.footer;
+  document.querySelector('.phone').classList.toggle('laptop-mode', cat === 'laptop');
+  show('view-intro');
+}
+
 function startQuiz(){
-  trackEvent('quiz-start');
+  current = 0;
+  answers = new Array(Q().length).fill(null);
+  trackEvent('quiz-start-' + category);
   show('view-quiz');
   renderQuestion();
 }
 
 function restartQuiz(){
+  category = null;
   current = 0;
-  answers = new Array(QUESTIONS.length).fill(null);
+  answers = [];
   aiResultCache = null;
   document.getElementById('getResultBtn').classList.add('hidden');
   document.getElementById('subHint').textContent = 'Кнопка получения результата появится здесь после перехода в канал';
   setBattery(0);
-  show('view-quiz');
-  renderQuestion();
+  document.querySelector('.phone').classList.remove('laptop-mode');
+  show('view-category');
 }
 
 function renderDots(){
   const dotsEl = document.getElementById('dots');
   dotsEl.innerHTML='';
-  const total = QUESTIONS.length;
+  const total = Q().length;
   const windowSize = 5;
   let start = Math.max(0, Math.min(current - Math.floor(windowSize/2), total-windowSize));
   for(let i=start;i<Math.min(total,start+windowSize);i++){
@@ -850,8 +1122,8 @@ function renderDots(){
 }
 
 function renderQuestion(){
-  const item = QUESTIONS[current];
-  document.getElementById('qcounter').textContent = `ВОПРОС ${current+1} ИЗ ${QUESTIONS.length}`;
+  const item = Q()[current];
+  document.getElementById('qcounter').textContent = `ВОПРОС ${current+1} ИЗ ${Q().length}`;
   document.getElementById('qtitle').textContent = item.q;
   const optWrap = document.getElementById('qoptions');
   optWrap.innerHTML='';
@@ -864,19 +1136,20 @@ function renderQuestion(){
   });
   document.getElementById('backBtn').classList.toggle('show', current>0);
   renderDots();
-  setBattery((current/QUESTIONS.length)*100);
+  setBattery((current/Q().length)*100);
 }
 
 function selectOption(idx){
   answers[current] = idx;
   renderQuestion();
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
   setTimeout(()=>{
-    if(current < QUESTIONS.length-1){
+    if(current < Q().length-1){
       current++;
       renderQuestion();
     } else {
       setBattery(100);
-      trackEvent('quiz-complete');
+      trackEvent('quiz-complete-' + category);
       beginAnalysis();
     }
   }, 320);
@@ -1021,7 +1294,102 @@ const PHONES = [
 {name:"RedMagic 10 Pro", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
 {name:"Lenovo Legion Y700", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
 {name:"ASUS ROG Phone 9", brand:"gaming", priceTier:3, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
-{name:"ASUS ROG Phone 9 Pro", brand:"gaming", priceTier:4, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:2, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]}
+{name:"ASUS ROG Phone 9 Pro", brand:"gaming", priceTier:4, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:2, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","flagship"]},
+// APPLE (доп.)
+{name:"iPhone 13", brand:"apple", priceTier:0, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","compact"]},
+{name:"iPhone 14", brand:"apple", priceTier:1, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["allround","compact"]},
+{name:"iPhone 14 Plus", brand:"apple", priceTier:1, size:"large", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["allround"]},
+{name:"iPhone 16e", brand:"apple", priceTier:1, size:"compact", display:"oled", refresh:60, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["work","value","compact"]},
+{name:"iPhone 14 Pro", brand:"apple", priceTier:2, size:"compact", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo","compact"]},
+{name:"iPhone 14 Pro Max", brand:"apple", priceTier:2, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+{name:"iPhone 15 Pro Max", brand:"apple", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+// SAMSUNG (доп.)
+{name:"Samsung Galaxy A17 5G", brand:"samsung", priceTier:0, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, longevitySupport:true, tags:["value"]},
+{name:"Samsung Galaxy A26 5G", brand:"samsung", priceTier:0, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:1, gamingScore:0, ip68:true, tags:["value"]},
+{name:"Samsung Galaxy XCover7", brand:"samsung", priceTier:1, size:"standard", display:"ips", refresh:60, ltpo:false, cameraScore:0, gamingScore:0, ip68:true, rugged:true, tags:["value"]},
+{name:"Samsung Galaxy S23 FE", brand:"samsung", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value","allround"]},
+{name:"Samsung Galaxy S24", brand:"samsung", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, tags:["allround","flagship"]},
+{name:"Samsung Galaxy S24 Ultra", brand:"samsung", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, tags:["flagship","photo"]},
+{name:"Samsung Galaxy Z Flip6", brand:"samsung", priceTier:2, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["stylish","fold","compact"]},
+{name:"Samsung Galaxy Z Fold6", brand:"samsung", priceTier:3, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["stylish","fold","flagship"]},
+{name:"Samsung Galaxy M56", brand:"samsung", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value"]},
+// XIAOMI (доп.)
+{name:"Redmi 13C", brand:"xiaomi", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Redmi 15", brand:"xiaomi", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Redmi Note 15", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["value"]},
+{name:"POCO C75", brand:"xiaomi", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"POCO M7", brand:"xiaomi", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"POCO X7", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"Redmi Turbo 4", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"Xiaomi Civi 4 Pro", brand:"xiaomi", priceTier:2, size:"compact", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["photo","compact"]},
+{name:"Xiaomi 14", brand:"xiaomi", priceTier:2, size:"compact", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","compact"]},
+{name:"Xiaomi 14 Ultra", brand:"xiaomi", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:3, ip68:true, tags:["flagship","photo"]},
+// MOTOROLA (доп.)
+{name:"Moto G34", brand:"motorola", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Moto G54", brand:"motorola", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"Motorola Edge 50 Fusion", brand:"motorola", priceTier:1, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, tags:["value","stylish"]},
+{name:"Motorola Edge 50 Pro", brand:"motorola", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish"]},
+{name:"Motorola Razr 60", brand:"motorola", priceTier:2, size:"fold", display:"oled", refresh:90, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","fold","compact"]},
+// GOOGLE PIXEL (доп.)
+{name:"Google Pixel 7a", brand:"pixel", priceTier:1, size:"compact", display:"oled", refresh:90, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","photo","compact"]},
+{name:"Google Pixel 9", brand:"pixel", priceTier:2, size:"compact", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, longevitySupport:true, tags:["allround","photo","compact"]},
+{name:"Google Pixel 9 Pro XL", brand:"pixel", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, longevitySupport:true, tags:["flagship","photo"]},
+// ONEPLUS (доп.)
+{name:"OnePlus Nord 4", brand:"oneplus", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:true, fastCharge:true, tags:["value"]},
+{name:"OnePlus 12R", brand:"oneplus", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:true, fastCharge:true, tags:["value"]},
+{name:"OnePlus Ace 5", brand:"oneplus", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]},
+{name:"OnePlus 13", brand:"oneplus", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:3, ip68:true, fastCharge:true, tags:["flagship"]},
+// REALME (доп.)
+{name:"Realme C75", brand:"realme", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:true, tags:["value"]},
+{name:"Realme Narzo 70 Pro", brand:"realme", priceTier:0, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"Realme 13 Pro+", brand:"realme", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"Realme GT6T", brand:"realme", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:2, ip68:false, tags:["value","gaming"]},
+// OPPO (доп.)
+{name:"OPPO A78", brand:"oppo", priceTier:0, size:"standard", display:"oled", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"OPPO A5 Pro", brand:"oppo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"OPPO Reno12", brand:"oppo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"OPPO Find X8 Pro", brand:"oppo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// VIVO (доп.)
+{name:"Vivo Y29", brand:"vivo", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Vivo V30", brand:"vivo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"iQOO Neo 10", brand:"vivo", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, tags:["gaming","value"]},
+{name:"Vivo X200", brand:"vivo", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// NOTHING & CMF (доп.)
+{name:"CMF Phone 1", brand:"nothing", priceTier:0, size:"compact", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value","stylish"]},
+{name:"Nothing Phone (2a) Plus", brand:"nothing", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","value"]},
+// HONOR (доп.)
+{name:"Honor X6a", brand:"honor", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, pwmSafe:true, tags:["value"]},
+{name:"Honor 90", brand:"honor", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, pwmSafe:true, tags:["value","photo"]},
+{name:"Honor Magic6 Lite", brand:"honor", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, rugged:true, pwmSafe:true, tags:["value"]},
+{name:"Honor Magic V2", brand:"honor", priceTier:3, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, pwmSafe:true, tags:["stylish","fold","flagship"]},
+// HUAWEI (доп.)
+{name:"Huawei nova 12", brand:"huawei", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:0, ip68:false, tags:["value","stylish"]},
+{name:"Huawei Pura 70", brand:"huawei", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["allround"]},
+{name:"Huawei Mate X6", brand:"huawei", priceTier:4, size:"fold", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["stylish","fold","flagship"]},
+// SONY (доп.)
+{name:"Sony Xperia 5 VI", brand:"sony", priceTier:3, size:"compact", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","compact"]},
+{name:"Sony Xperia 1 VI", brand:"sony", priceTier:4, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// TECNO (доп.)
+{name:"Tecno Pova 6", brand:"tecno", priceTier:0, size:"standard", display:"ips", refresh:120, ltpo:false, cameraScore:0, gamingScore:2, ip68:false, tags:["value","gaming"]},
+{name:"Tecno Camon 30", brand:"tecno", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"Tecno Phantom X2", brand:"tecno", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+// INFINIX (доп.)
+{name:"Infinix Hot 50", brand:"infinix", priceTier:0, size:"standard", display:"ips", refresh:120, ltpo:false, cameraScore:0, gamingScore:1, ip68:false, tags:["value"]},
+{name:"Infinix Note 40 Pro", brand:"infinix", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value"]},
+{name:"Infinix Zero 30", brand:"infinix", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+// ZTE / NUBIA (доп.)
+{name:"ZTE Blade V60", brand:"nubia", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, tags:["value"]},
+{name:"Nubia Flip", brand:"nubia", priceTier:2, size:"fold", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:false, tags:["stylish","fold","value"]},
+{name:"Nubia Z60 Ultra", brand:"nubia", priceTier:3, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","photo"]},
+// ЗАЩИЩЁННЫЕ (доп.)
+{name:"Ulefone Armor 24", brand:"rugged", priceTier:1, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"AGM Glory G1S", brand:"rugged", priceTier:1, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, tags:["value"]},
+{name:"Doogee S200", brand:"rugged", priceTier:2, size:"large", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:1, ip68:true, rugged:true, enduranceBattery:true, tags:["value"]},
+{name:"CAT S62 Pro", brand:"rugged", priceTier:3, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, rugged:true, tags:["flagship"]},
+// ИГРОВЫЕ (доп.)
+{name:"RedMagic 9 Pro", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]},
+{name:"ASUS ROG Phone 8", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:1, gamingScore:3, ip68:true, fastCharge:true, tags:["gaming","value"]},
+{name:"Lenovo Legion Y90", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]}
 ];
 
 const BRAND_BY_ANSWER = ["apple","samsung","xiaomi","pixel","motorola","oneplus","realme","oppo","vivo","honor","huawei","nothing","sony","gaming","tecno","infinix","nubia","rugged"];
@@ -1145,7 +1513,272 @@ function buildResult(){
   return {
     ok: true,
     summary: "По твоим ответам мы сопоставили бюджет, характеристики и приоритеты со всей базой моделей 2026 года — вот три, что подошли лучше всего.",
-    phones: picked.map(p => ({ name: p.name, tagline: taglineFor(p), reason: reasonFor(p) }))
+    items: picked.map(p => ({ name: p.name, tagline: taglineFor(p), reason: reasonFor(p) }))
+  };
+}
+
+/* ============ ПОЛНАЯ БАЗА НОУТБУКОВ (сезон 2026) ============
+   priceTier: 0=до40000₽, 1=40-80к, 2=80-150к, 3=150-250к, 4=от250к/без ограничений
+   size: compact | standard | large      os: windows | macos
+   lightweight/durable/linuxFriendly/discreteGPU/fastCharge/enduranceBattery: bool
+   creativeScore/gamingScore: 0-3
+   tags: value | flagship | allround | work | study | dev | creative | gaming | portable
+*/
+const LAPTOPS = [
+// APPLE
+{name:"MacBook Air 13\" (M4)", brand:"apple", priceTier:2, size:"compact", os:"macos", lightweight:true, creativeScore:2, gamingScore:1, discreteGPU:false, tags:["work","allround","value","portable"]},
+{name:"MacBook Air 15\" (M4)", brand:"apple", priceTier:3, size:"standard", os:"macos", lightweight:true, creativeScore:2, gamingScore:1, discreteGPU:false, tags:["work","allround","portable"]},
+{name:"MacBook Pro 14\" (M4 Pro)", brand:"apple", priceTier:4, size:"standard", os:"macos", lightweight:true, durable:true, creativeScore:3, gamingScore:2, discreteGPU:false, tags:["flagship","creative","work","portable"]},
+{name:"MacBook Pro 16\" (M4 Max)", brand:"apple", priceTier:4, size:"large", os:"macos", durable:true, creativeScore:3, gamingScore:2, discreteGPU:false, tags:["flagship","creative"]},
+// DELL
+{name:"Dell Inspiron 15", brand:"dell", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"Dell Vostro 14", brand:"dell", priceTier:1, size:"standard", os:"windows", durable:true, tags:["work","value"]},
+{name:"Dell XPS 13", brand:"dell", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","work","portable"]},
+{name:"Dell XPS 15", brand:"dell", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["flagship","creative"]},
+{name:"Dell Latitude 7000", brand:"dell", priceTier:3, size:"standard", os:"windows", lightweight:true, durable:true, tags:["work","portable"]},
+{name:"Dell Alienware m16", brand:"dell", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// HP
+{name:"HP 15", brand:"hp", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"HP Pavilion 15", brand:"hp", priceTier:1, size:"standard", os:"windows", tags:["value","allround"]},
+{name:"HP Envy x360", brand:"hp", priceTier:2, size:"standard", os:"windows", lightweight:true, creativeScore:1, tags:["allround"]},
+{name:"HP Spectre x360", brand:"hp", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","portable"]},
+{name:"HP OMEN 16", brand:"hp", priceTier:3, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming"]},
+{name:"HP ZBook Studio", brand:"hp", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+// LENOVO
+{name:"Lenovo IdeaPad Slim 3", brand:"lenovo", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"Lenovo IdeaPad 5", brand:"lenovo", priceTier:1, size:"standard", os:"windows", tags:["value","allround"]},
+{name:"Lenovo ThinkPad E14", brand:"lenovo", priceTier:1, size:"standard", os:"windows", durable:true, tags:["work","value"]},
+{name:"Lenovo ThinkPad T14", brand:"lenovo", priceTier:2, size:"standard", os:"windows", durable:true, lightweight:true, linuxFriendly:true, tags:["work","dev","portable"]},
+{name:"Lenovo ThinkPad X1 Carbon", brand:"lenovo", priceTier:4, size:"compact", os:"windows", lightweight:true, durable:true, linuxFriendly:true, tags:["flagship","work","dev","portable"]},
+{name:"Lenovo Yoga 9i", brand:"lenovo", priceTier:3, size:"compact", os:"windows", lightweight:true, creativeScore:2, tags:["allround","portable"]},
+{name:"Lenovo Legion 5", brand:"lenovo", priceTier:2, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","value"]},
+{name:"Lenovo Legion Pro 7", brand:"lenovo", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// ASUS
+{name:"ASUS VivoBook 15", brand:"asus", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"ASUS VivoBook Pro 15", brand:"asus", priceTier:1, size:"standard", os:"windows", creativeScore:1, tags:["value","allround"]},
+{name:"ASUS ZenBook 14", brand:"asus", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:2, tags:["allround","portable"]},
+{name:"ASUS ZenBook Pro Duo", brand:"asus", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+{name:"ASUS TUF Gaming A15", brand:"asus", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"ASUS ROG Zephyrus G14", brand:"asus", priceTier:3, size:"compact", os:"windows", lightweight:true, gamingScore:3, discreteGPU:true, tags:["gaming","portable"]},
+{name:"ASUS ROG Strix SCAR 18", brand:"asus", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// ACER
+{name:"Acer Aspire 3", brand:"acer", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"Acer Aspire 5", brand:"acer", priceTier:1, size:"standard", os:"windows", tags:["value","allround"]},
+{name:"Acer Swift Go 14", brand:"acer", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","portable"]},
+{name:"Acer Swift X", brand:"acer", priceTier:2, size:"standard", os:"windows", discreteGPU:true, creativeScore:1, tags:["allround","creative"]},
+{name:"Acer Predator Helios Neo 16", brand:"acer", priceTier:2, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","value"]},
+{name:"Acer Predator Helios 18", brand:"acer", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// MSI
+{name:"MSI Modern 14", brand:"msi", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","work"]},
+{name:"MSI Katana 15", brand:"msi", priceTier:2, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"MSI Stealth 16", brand:"msi", priceTier:3, size:"standard", os:"windows", gamingScore:3, discreteGPU:true, lightweight:true, tags:["gaming","portable"]},
+{name:"MSI Titan 18 HX", brand:"msi", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+{name:"MSI Creator Z16", brand:"msi", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+// HUAWEI
+{name:"Huawei MateBook D14", brand:"huawei", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","allround"]},
+{name:"Huawei MateBook 14", brand:"huawei", priceTier:2, size:"standard", os:"windows", lightweight:true, creativeScore:1, tags:["allround"]},
+{name:"Huawei MateBook X Pro", brand:"huawei", priceTier:4, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","portable"]},
+// XIAOMI
+{name:"Xiaomi RedmiBook 15", brand:"xiaomi", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"Xiaomi Book Pro 14", brand:"xiaomi", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["allround","portable"]},
+// MICROSOFT
+{name:"Microsoft Surface Laptop Go 3", brand:"microsoft", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","portable"]},
+{name:"Microsoft Surface Laptop 6", brand:"microsoft", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:1, tags:["flagship","portable","work"]},
+{name:"Microsoft Surface Laptop Studio 2", brand:"microsoft", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+// SAMSUNG
+{name:"Samsung Galaxy Book4", brand:"samsung", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","allround"]},
+{name:"Samsung Galaxy Book4 Pro", brand:"samsung", priceTier:3, size:"compact", os:"windows", lightweight:true, creativeScore:2, tags:["flagship","portable"]},
+{name:"Samsung Galaxy Book4 Ultra", brand:"samsung", priceTier:4, size:"standard", os:"windows", discreteGPU:true, creativeScore:2, gamingScore:2, tags:["flagship","creative"]},
+// RAZER
+{name:"Razer Blade 14", brand:"razer", priceTier:4, size:"compact", os:"windows", lightweight:true, gamingScore:3, discreteGPU:true, tags:["gaming","flagship","portable"]},
+{name:"Razer Blade 16", brand:"razer", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// БЮДЖЕТНЫЕ И НИШЕВЫЕ
+{name:"Chuwi GemiBook", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value"]},
+{name:"Honor MagicBook 14", brand:"other", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","allround"]},
+{name:"LG Gram 16", brand:"other", priceTier:3, size:"large", os:"windows", lightweight:true, durable:true, tags:["flagship","portable"]},
+{name:"Framework Laptop 13", brand:"other", priceTier:3, size:"compact", os:"windows", linuxFriendly:true, durable:true, tags:["work","dev"]},
+// APPLE (доп.)
+{name:"MacBook Air 13\" (M3)", brand:"apple", priceTier:1, size:"compact", os:"macos", lightweight:true, creativeScore:1, gamingScore:1, discreteGPU:false, tags:["work","allround","value","portable"]},
+{name:"MacBook Air 15\" (M3)", brand:"apple", priceTier:2, size:"standard", os:"macos", lightweight:true, creativeScore:1, gamingScore:1, discreteGPU:false, tags:["work","allround","portable"]},
+// DELL (доп.)
+{name:"Dell Inspiron 14", brand:"dell", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"Dell G15", brand:"dell", priceTier:1, size:"large", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"Dell G16", brand:"dell", priceTier:2, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","value"]},
+{name:"Dell XPS 14", brand:"dell", priceTier:4, size:"standard", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","work","portable"]},
+{name:"Dell Precision 5680", brand:"dell", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, durable:true, tags:["creative","flagship","work"]},
+// HP (доп.)
+{name:"HP Victus 15", brand:"hp", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"HP EliteBook 840", brand:"hp", priceTier:3, size:"standard", os:"windows", durable:true, lightweight:true, tags:["work","portable"]},
+{name:"HP Chromebook x360", brand:"hp", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"HP Omen Transcend 14", brand:"hp", priceTier:3, size:"compact", os:"windows", lightweight:true, gamingScore:3, discreteGPU:true, tags:["gaming","portable"]},
+{name:"HP Envy 16", brand:"hp", priceTier:2, size:"large", os:"windows", creativeScore:2, discreteGPU:true, tags:["allround","creative"]},
+// LENOVO (доп.)
+{name:"Lenovo IdeaPad Gaming 3", brand:"lenovo", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"Lenovo ThinkBook 14", brand:"lenovo", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["work","value"]},
+{name:"Lenovo Legion Slim 5", brand:"lenovo", priceTier:3, size:"standard", os:"windows", lightweight:true, gamingScore:3, discreteGPU:true, tags:["gaming","portable"]},
+{name:"Lenovo Yoga Slim 7", brand:"lenovo", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["allround","portable"]},
+{name:"Lenovo ThinkPad P1", brand:"lenovo", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, durable:true, tags:["creative","flagship","work"]},
+{name:"Lenovo IdeaPad Flex 5", brand:"lenovo", priceTier:1, size:"standard", os:"windows", tags:["value","allround"]},
+{name:"Lenovo Legion 9i", brand:"lenovo", priceTier:4, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// ASUS (доп.)
+{name:"ASUS Vivobook S15", brand:"asus", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","allround"]},
+{name:"ASUS ProArt Studiobook", brand:"asus", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+{name:"ASUS TUF Gaming F15", brand:"asus", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"ASUS ROG Flow X13", brand:"asus", priceTier:4, size:"compact", os:"windows", lightweight:true, gamingScore:2, discreteGPU:true, tags:["gaming","portable"]},
+{name:"ASUS ExpertBook B5", brand:"asus", priceTier:2, size:"compact", os:"windows", lightweight:true, durable:true, tags:["work","portable"]},
+{name:"ASUS Zenbook Duo", brand:"asus", priceTier:4, size:"standard", os:"windows", creativeScore:2, tags:["creative","stylish"]},
+// ACER (доп.)
+{name:"Acer Nitro 5", brand:"acer", priceTier:1, size:"large", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"Acer Swift 3", brand:"acer", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","portable"]},
+{name:"Acer TravelMate P4", brand:"acer", priceTier:2, size:"compact", os:"windows", lightweight:true, durable:true, tags:["work","portable"]},
+{name:"Acer ConceptD 3", brand:"acer", priceTier:3, size:"standard", os:"windows", creativeScore:2, discreteGPU:true, tags:["creative"]},
+{name:"Acer Predator Triton 14", brand:"acer", priceTier:3, size:"compact", os:"windows", lightweight:true, gamingScore:3, discreteGPU:true, tags:["gaming","portable"]},
+// MSI (доп.)
+{name:"MSI Cyborg 15", brand:"msi", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"MSI Prestige 16", brand:"msi", priceTier:3, size:"standard", os:"windows", lightweight:true, creativeScore:2, tags:["creative","portable"]},
+{name:"MSI Bravo 15", brand:"msi", priceTier:1, size:"standard", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"MSI Sword 16", brand:"msi", priceTier:2, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","value"]},
+// HUAWEI (доп.)
+{name:"Huawei MateBook 16s", brand:"huawei", priceTier:3, size:"large", os:"windows", creativeScore:2, tags:["creative","allround"]},
+{name:"Huawei MateBook E", brand:"huawei", priceTier:3, size:"compact", os:"windows", lightweight:true, tags:["portable","work"]},
+// XIAOMI (доп.)
+{name:"Xiaomi Notebook Pro 15", brand:"xiaomi", priceTier:2, size:"standard", os:"windows", lightweight:true, creativeScore:1, tags:["allround"]},
+{name:"Redmi Book 16", brand:"xiaomi", priceTier:1, size:"large", os:"windows", tags:["value","allround"]},
+// MICROSOFT (доп.)
+{name:"Microsoft Surface Pro 10", brand:"microsoft", priceTier:3, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["work","portable"]},
+// SAMSUNG (доп.)
+{name:"Samsung Galaxy Book4 Edge", brand:"samsung", priceTier:3, size:"compact", os:"windows", lightweight:true, tags:["flagship","portable"]},
+{name:"Samsung Galaxy Book5 Pro", brand:"samsung", priceTier:4, size:"standard", os:"windows", lightweight:true, creativeScore:2, tags:["flagship","portable"]},
+// RAZER (доп.)
+{name:"Razer Blade 15", brand:"razer", priceTier:4, size:"standard", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+// БЮДЖЕТНЫЕ И НИШЕВЫЕ (доп.)
+{name:"LG Gram Pro 16", brand:"other", priceTier:4, size:"large", os:"windows", lightweight:true, durable:true, tags:["flagship","portable"]},
+{name:"Framework Laptop 16", brand:"other", priceTier:4, size:"large", os:"windows", linuxFriendly:true, durable:true, discreteGPU:true, tags:["work","dev","creative"]},
+{name:"Chuwi Minibook X", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value","portable"]},
+{name:"Jumper EZbook X15", brand:"other", priceTier:0, size:"standard", os:"windows", tags:["value"]},
+{name:"Prestigio SmartBook", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value","portable"]},
+{name:"Vaio FE14", brand:"other", priceTier:2, size:"standard", os:"windows", durable:true, tags:["work"]},
+{name:"Infinix Inbook Y2", brand:"other", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
+{name:"Tecno Megabook T1", brand:"other", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","allround"]},
+{name:"Gigabyte AORUS 15", brand:"other", priceTier:3, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
+{name:"Gigabyte AERO 16", brand:"other", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]}
+];
+
+const LAPTOP_BRAND_BY_ANSWER = ["apple","dell","hp","lenovo","asus","acer","msi","huawei","xiaomi","microsoft","samsung","razer"];
+const LAPTOP_USAGE_TAG = ["study","work","dev","creative","gaming","allround"];
+
+function scoreLaptop(l){
+  let s = 0;
+  const budget = answers[0], size = answers[1], os = answers[2], weight = answers[3],
+        usage = answers[4], gaming = answers[5], color = answers[6], battery = answers[7],
+        ram = answers[8], storage = answers[9], gpu = answers[10], brand = answers[11],
+        durability = answers[12], priority = answers[13], freq = answers[14];
+
+  // Бюджет
+  if(budget !== null){
+    if(budget === 4){ s += l.priceTier * 0.6; }
+    else {
+      const diff = Math.abs(l.priceTier - budget);
+      s += Math.max(-12, 6 - diff * 4);
+    }
+  }
+  // Размер экрана
+  if(size !== null && size !== 3){
+    const sizeMap = ["compact","standard","large"];
+    if(l.size === sizeMap[size]) s += 3;
+  }
+  // ОС
+  if(os === 0 && l.os === "windows") s += 1.5;
+  if(os === 1 && l.os === "macos") s += 6;
+  if(os === 3 && l.linuxFriendly) s += 3;
+  // Вес/мобильность
+  if(weight === 0 && l.lightweight) s += 3;
+  if(weight === 2 && l.lightweight) s -= 0.5;
+  // Назначение
+  if(usage !== null && usage < LAPTOP_USAGE_TAG.length && l.tags.includes(LAPTOP_USAGE_TAG[usage])) s += 2;
+  // Игры
+  if(gaming === 0) s += (l.gamingScore||0) * 2.5;
+  else if(gaming === 1) s += (l.gamingScore||0) * 1.2;
+  else if(gaming === 2) s += (l.gamingScore||0) * 0.5;
+  else if(gaming === 3 && (l.gamingScore||0) === 0) s += 0.5;
+  // Цветопередача / творчество
+  if(color === 0) s += (l.creativeScore||0) * 2.5;
+  else if(color === 1) s += (l.creativeScore||0) * 1;
+  // Батарея
+  if(battery === 0 && l.enduranceBattery) s += 2;
+  if(battery === 2 && l.fastCharge) s += 2;
+  // Память/накопитель — косвенно поощряем более высокий ценовой уровень при больших запросах
+  if(ram === 2 && l.priceTier >= 2) s += 1;
+  if((storage === 2) && l.priceTier >= 2) s += 0.5;
+  // Видеокарта
+  if(gpu === 0){ s += l.discreteGPU ? 3 : -2; }
+  if(gpu === 1 && l.discreteGPU) s += 1;
+  if(gpu === 2 && !l.discreteGPU) s += 0.5;
+  // Бренд
+  if(brand !== null && brand < LAPTOP_BRAND_BY_ANSWER.length && l.brand === LAPTOP_BRAND_BY_ANSWER[brand]) s += 6;
+  // Прочность
+  if(durability === 0 && l.durable) s += 2.5;
+  // Главный приоритет
+  if(priority === 0 && l.tags.includes("work")) s += 2;
+  if(priority === 1 && l.tags.includes("value")) s += 2.5;
+  if(priority === 2 && l.tags.includes("flagship")) s += 2;
+  if(priority === 3 && l.lightweight) s += 2;
+  if(priority === 4 && (l.creativeScore||0) >= 2) s += 2;
+  if(priority === 5 && (l.gamingScore||0) >= 2) s += 2;
+  // Частота смены
+  if(freq === 0 && l.tags.includes("flagship")) s += 1;
+  if(freq === 2 && l.durable) s += 2;
+  if(freq === 3 && l.tags.includes("value")) s += 1;
+
+  return s;
+}
+
+function buildResultLaptop(){
+  const scored = LAPTOPS.map(l => ({ laptop: l, score: scoreLaptop(l) }))
+                         .sort((a, b) => b.score - a.score);
+
+  const brandChosen = answers[11] !== null && answers[11] < LAPTOP_BRAND_BY_ANSWER.length;
+  const picked = [];
+  const seenBrand = new Set();
+  for(const item of scored){
+    if(picked.length >= 3) break;
+    if(!brandChosen && seenBrand.has(item.laptop.brand)) continue;
+    picked.push(item.laptop);
+    seenBrand.add(item.laptop.brand);
+  }
+  if(picked.length < 3){
+    for(const item of scored){
+      if(picked.length >= 3) break;
+      if(!picked.includes(item.laptop)) picked.push(item.laptop);
+    }
+  }
+
+  const taglineFor = (l) => {
+    if(l.tags.includes("flagship")) return "Флагман";
+    if(l.tags.includes("value")) return "Топ за свои деньги";
+    if(l.tags.includes("gaming")) return "Для игр";
+    if(l.tags.includes("creative")) return "Для творчества";
+    if(l.lightweight) return "Лёгкий и портативный";
+    return "Хороший баланс";
+  };
+  const reasonFor = (l) => {
+    const bits = [];
+    if(l.lightweight) bits.push("лёгкий и удобно носить с собой");
+    if(l.durable) bits.push("прочный корпус для поездок");
+    if((l.gamingScore||0) >= 2) bits.push("тянет требовательные игры");
+    if((l.creativeScore||0) >= 2) bits.push("подходит для дизайна и монтажа");
+    if(l.discreteGPU) bits.push("есть дискретная видеокарта");
+    if(l.enduranceBattery) bits.push("долго держит заряд");
+    if(l.fastCharge) bits.push("быстро заряжается");
+    if(l.linuxFriendly) bits.push("дружит с Linux");
+    if(bits.length === 0) bits.push("сбалансированные характеристики за свою цену");
+    return "Подходит по твоим ответам: " + bits.slice(0,3).join(", ") + ".";
+  };
+
+  return {
+    ok: true,
+    summary: "По твоим ответам мы сопоставили бюджет, задачи и приоритеты со всей базой ноутбуков 2026 года — вот три, что подошли лучше всего.",
+    items: picked.map(l => ({ name: l.name, tagline: taglineFor(l), reason: reasonFor(l) }))
   };
 }
 
@@ -1163,7 +1796,7 @@ function beginAnalysis(){
   let i=0;
   const interval = setInterval(()=>{ i=(i+1)%msgs.length; sub.textContent = msgs[i]; }, 700);
 
-  aiResultCache = buildResult();
+  aiResultCache = category === 'laptop' ? buildResultLaptop() : buildResult();
 
   setTimeout(()=>{
     clearInterval(interval);
@@ -1173,28 +1806,28 @@ function beginAnalysis(){
 }
 
 function onSubscribeClicked(){
-  trackEvent('subscribe-click');
+  trackEvent('subscribe-click-' + category);
   window.open('https://telegram.me/pshenichny_Tech', '_blank', 'noopener');
   document.getElementById('getResultBtn').classList.remove('hidden');
   document.getElementById('subHint').textContent = 'Если уже подписан — жми кнопку ниже';
 }
 
 function verifySub(){
-  trackEvent('get-result-click');
+  trackEvent('get-result-click-' + category);
   show('view-verifying');
   setTimeout(()=>{
     renderResult();
     show('view-result');
-    trackEvent('result-shown');
+    trackEvent('result-shown-' + category);
   }, 1900);
 }
 
 function renderResult(){
-  const res = aiResultCache || fallbackResult(computeScores(), topBuckets(computeScores(),3));
+  const res = aiResultCache || (category === 'laptop' ? buildResultLaptop() : buildResult());
   document.getElementById('resultSummary').textContent = res.summary;
   const wrap = document.getElementById('phoneCards');
   wrap.innerHTML='';
-  res.phones.slice(0,3).forEach((p, i)=>{
+  res.items.slice(0,3).forEach((p, i)=>{
     const card = document.createElement('div');
     card.className='phone-card';
     card.innerHTML = `
