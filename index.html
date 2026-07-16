@@ -89,6 +89,7 @@ h1.display{
   max-width:92vw;
   height:720px;
   max-height:78vh;
+  max-height:78svh;
   background:linear-gradient(160deg,#1B1D24,#0F1015 70%);
   border-radius:52px;
   padding:14px;
@@ -192,6 +193,7 @@ h1.display{
   display:flex;
   flex-direction:column;
   padding:14px 22px 18px;
+  overflow-y:auto;
 }
 .view{
   flex:1;
@@ -573,7 +575,7 @@ h1.display{
     <div class="screen">
       <div class="island"></div>
       <div class="statusbar">
-        <span>9:41</span>
+        <span id="statusTime">9:41</span>
         <div class="battery">
           <span class="battery-pct" id="battPct">0%</span>
           <div class="battery-shell"><div class="battery-fill" id="battFill"></div></div>
@@ -1056,6 +1058,17 @@ function setBattery(pct){
   document.getElementById('battPct').textContent = Math.round(pct)+'%';
 }
 
+function updateClock(){
+  const el = document.getElementById('statusTime');
+  if(!el) return;
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  el.textContent = h + ':' + m;
+}
+updateClock();
+setInterval(updateClock, 15000);
+
 function trackEvent(name){
   try{
     if(window.goatcounter && typeof window.goatcounter.count === 'function'){
@@ -1389,7 +1402,13 @@ const PHONES = [
 // ИГРОВЫЕ (доп.)
 {name:"RedMagic 9 Pro", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]},
 {name:"ASUS ROG Phone 8", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:165, ltpo:false, cameraScore:1, gamingScore:3, ip68:true, fastCharge:true, tags:["gaming","value"]},
-{name:"Lenovo Legion Y90", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]}
+{name:"Lenovo Legion Y90", brand:"gaming", priceTier:2, size:"large", display:"oled", refresh:144, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["gaming","value"]},
+// НОВИНКИ 2026 (весна-лето)
+{name:"Huawei Pura 90", brand:"huawei", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:1, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
+{name:"Huawei Pura 90 Ultra", brand:"huawei", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
+{name:"Realme GT8 Pro", brand:"realme", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:3, ip68:true, tags:["gaming","value","flagship"]},
+{name:"Nothing CMF Phone 2 Pro", brand:"nothing", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value","stylish"]},
+{name:"Vivo X300 Ultra", brand:"vivo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]}
 ];
 
 const BRAND_BY_ANSWER = ["apple","samsung","xiaomi","pixel","motorola","oneplus","realme","oppo","vivo","honor","huawei","nothing","sony","gaming","tecno","infinix","nubia","rugged"];
@@ -1661,7 +1680,18 @@ const LAPTOPS = [
 {name:"Infinix Inbook Y2", brand:"other", priceTier:0, size:"standard", os:"windows", tags:["value","study"]},
 {name:"Tecno Megabook T1", brand:"other", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","allround"]},
 {name:"Gigabyte AORUS 15", brand:"other", priceTier:3, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","flagship"]},
-{name:"Gigabyte AERO 16", brand:"other", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]}
+{name:"Gigabyte AERO 16", brand:"other", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+// НОВИНКИ 2026 (весна-лето)
+{name:"MacBook Air 13\" (M5)", brand:"apple", priceTier:2, size:"compact", os:"macos", lightweight:true, creativeScore:2, gamingScore:1, discreteGPU:false, tags:["work","allround","value","portable"]},
+{name:"MacBook Air 15\" (M5)", brand:"apple", priceTier:3, size:"standard", os:"macos", lightweight:true, creativeScore:2, gamingScore:1, discreteGPU:false, tags:["work","allround","portable"]},
+{name:"MacBook Pro 14\" (M5)", brand:"apple", priceTier:4, size:"standard", os:"macos", lightweight:true, durable:true, creativeScore:3, gamingScore:2, discreteGPU:false, tags:["flagship","creative","work","portable"]},
+{name:"ASUS ProArt P16", brand:"asus", priceTier:4, size:"standard", os:"windows", creativeScore:3, discreteGPU:true, tags:["creative","flagship"]},
+{name:"ASUS Zenbook S 14 OLED", brand:"asus", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["allround","portable"]},
+{name:"Lenovo Yoga 9i 14 (2026)", brand:"lenovo", priceTier:3, size:"compact", os:"windows", lightweight:true, creativeScore:2, tags:["allround","portable","flagship"]},
+{name:"Huawei MateBook GT 14", brand:"huawei", priceTier:2, size:"compact", os:"windows", lightweight:true, gamingScore:1, creativeScore:1, tags:["allround","portable"]},
+{name:"MSI Prestige 13 AI Evo", brand:"msi", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["work","portable"]},
+{name:"HP Spectre x360 14 (2026)", brand:"hp", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","portable"]},
+{name:"Acer Swift Lite 16", brand:"acer", priceTier:1, size:"large", os:"windows", lightweight:true, tags:["value","study","work"]}
 ];
 
 const LAPTOP_BRAND_BY_ANSWER = ["apple","dell","hp","lenovo","asus","acer","msi","huawei","xiaomi","microsoft","samsung","razer"];
