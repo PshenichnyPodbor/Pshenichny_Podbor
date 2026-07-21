@@ -30,10 +30,7 @@ html,body{margin:0;padding:0;}
 body{
   min-height:100vh;
   position:relative;
-  background:
-    radial-gradient(60% 50% at 18% 8%, rgba(255,157,46,0.16), transparent 60%),
-    radial-gradient(55% 45% at 85% 92%, rgba(42,171,238,0.10), transparent 60%),
-    var(--bg);
+  background:var(--bg);
   font-family:'Inter', sans-serif;
   color:var(--ink);
   display:flex;
@@ -56,6 +53,21 @@ body::before{
   filter:blur(0.5px);
   pointer-events:none;
   z-index:0;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(60% 50% at 18% 8%, rgba(255,157,46,0.16), transparent 60%),
+    radial-gradient(55% 45% at 85% 92%, rgba(42,171,238,0.10), transparent 60%);
+  pointer-events:none;
+  z-index:0;
+  animation:ambientBreathe 9s ease-in-out infinite;
+}
+@keyframes ambientBreathe{
+  0%,100%{ opacity:0.75; }
+  50%{ opacity:1; }
 }
 .stage{
   position:relative;
@@ -115,7 +127,14 @@ h1.display{
   box-shadow:
     0 40px 80px -30px rgba(20,23,31,0.45),
     0 2px 0 rgba(255,255,255,0.06) inset;
-  transition:width .5s cubic-bezier(.2,.8,.2,1), border-radius .5s ease, padding-bottom .5s ease, margin-bottom .5s ease;
+  transition:width .5s cubic-bezier(.2,.8,.2,1), border-radius .5s ease, padding-bottom .5s ease, margin-bottom .5s ease, box-shadow .3s ease, transform .12s ease-out;
+  transform-style:preserve-3d;
+  transform:perspective(1000px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg));
+  animation:phoneEntrance .7s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes phoneEntrance{
+  from{ opacity:0; transform:perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(24px) scale(.96); }
+  to{ opacity:1; transform:perspective(1000px) rotateX(var(--tiltX,0deg)) rotateY(var(--tiltY,0deg)) translateY(0) scale(1); }
 }
 .phone.laptop-mode{
   width:520px;
@@ -191,6 +210,15 @@ h1.display{
   border-radius:3px;
   position:relative;
   padding:1.5px;
+  transition:box-shadow .3s ease;
+}
+.battery-shell.battery-complete{
+  animation:batteryPulse .8s ease-out;
+}
+@keyframes batteryPulse{
+  0%{ box-shadow:0 0 0 0 rgba(255,157,46,0.6); }
+  70%{ box-shadow:0 0 0 8px rgba(255,157,46,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,157,46,0); }
 }
 .battery-shell::after{
   content:"";
@@ -346,11 +374,11 @@ h1.display{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:10px;
+  gap:8px;
   background:var(--bg-2);
   border:1.5px solid var(--line);
   border-radius:18px;
-  padding:22px 12px;
+  padding:16px 10px;
   cursor:pointer;
   outline:none;
   touch-action:manipulation;
@@ -363,8 +391,9 @@ h1.display{
 .category-label{
   font-family:'Space Grotesk';
   font-weight:700;
-  font-size:14px;
+  font-size:12.5px;
   color:var(--ink);
+  text-align:center;
 }
 
 /* question */
@@ -412,6 +441,12 @@ h1.display{
   border-color:var(--coral);
   background:var(--coral-soft);
   font-weight:600;
+  animation:optionConfirm .35s ease-out;
+}
+@keyframes optionConfirm{
+  0%{ transform:scale(1); box-shadow:0 0 0 0 rgba(255,157,46,0.45); }
+  40%{ transform:scale(1.015); box-shadow:0 0 0 6px rgba(255,157,46,0.12); }
+  100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(255,157,46,0); }
 }
 .navrow{
   display:flex;
@@ -526,6 +561,13 @@ h1.display{
   padding:14px;
   margin-bottom:12px;
   position:relative;
+  opacity:0;
+  animation:cardReveal .5s cubic-bezier(.2,.8,.2,1) forwards;
+  animation-delay:var(--card-delay, 0s);
+}
+@keyframes cardReveal{
+  from{ opacity:0; transform:translateY(14px) scale(.97); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
 }
 .phone-card .rank{
   position:absolute; top:-9px; left:14px;
@@ -621,7 +663,7 @@ h1.display{
         <span id="statusTime">9:41</span>
         <div class="battery">
           <span class="battery-pct" id="battPct">0%</span>
-          <div class="battery-shell"><div class="battery-fill" id="battFill"></div></div>
+          <div class="battery-shell" id="battShell"><div class="battery-fill" id="battFill"></div></div>
         </div>
       </div>
 
@@ -652,6 +694,22 @@ h1.display{
                 <path d="M3 30h34l-3 4H6l-3-4z" stroke="var(--coral)" stroke-width="2.2" stroke-linejoin="round"/>
               </svg>
               <span class="category-label">Ноутбук</span>
+            </button>
+            <button class="category-card" onclick="selectCategory('tablet')">
+              <svg class="category-icon" viewBox="0 0 40 40" fill="none">
+                <rect x="8" y="5" width="24" height="30" rx="3.5" stroke="var(--coral)" stroke-width="2.2"/>
+                <circle cx="20" cy="30.5" r="1.6" fill="var(--coral)"/>
+              </svg>
+              <span class="category-label">Планшет</span>
+            </button>
+            <button class="category-card" onclick="selectCategory('tvbox')">
+              <svg class="category-icon" viewBox="0 0 40 40" fill="none">
+                <rect x="4" y="8" width="32" height="20" rx="2.5" stroke="var(--coral)" stroke-width="2.2"/>
+                <line x1="14" y1="33" x2="26" y2="33" stroke="var(--coral)" stroke-width="2.2" stroke-linecap="round"/>
+                <line x1="20" y1="28" x2="20" y2="33" stroke="var(--coral)" stroke-width="2.2"/>
+                <rect x="9" y="13" width="6" height="4" rx="1" stroke="var(--coral)" stroke-width="1.8"/>
+              </svg>
+              <span class="category-label">ТВ-приставка</span>
             </button>
           </div>
         </div>
@@ -1064,7 +1122,290 @@ const QUESTIONS_LAPTOP = [
 }
 ];
 
-function Q(){ return category === 'laptop' ? QUESTIONS_LAPTOP : QUESTIONS_PHONE; }
+const QUESTIONS_TABLET = [
+{
+  q:"Какой бюджет ты рассматриваешь на планшет?",
+  opts:[
+    {t:"До 20 000 ₽"},
+    {t:"20 000–45 000 ₽"},
+    {t:"45 000–85 000 ₽"},
+    {t:"85 000–150 000 ₽"},
+    {t:"Бюджет не важен, главное качество"}
+  ]
+},
+{
+  q:"Какой размер экрана предпочитаешь?",
+  opts:[
+    {t:"Компактный (до 10\")"},
+    {t:"Стандартный (10\"–11\")"},
+    {t:"Большой (12\" и больше)"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Какая операционная система нужна?",
+  opts:[
+    {t:"iPadOS (Apple)"},
+    {t:"Android"},
+    {t:"Windows"},
+    {t:"Без разницы, любая"}
+  ]
+},
+{
+  q:"Для чего в основном нужен планшет?",
+  opts:[
+    {t:"Учёба и конспекты"},
+    {t:"Работа с документами и почтой"},
+    {t:"Рисование и заметки от руки"},
+    {t:"Чтение и медиа (видео, книги)"},
+    {t:"Игры"},
+    {t:"Всего понемногу"}
+  ]
+},
+{
+  q:"Насколько важна поддержка стилуса?",
+  opts:[
+    {t:"Обязательно нужен стилус (рисование, заметки)"},
+    {t:"Было бы неплохо, но не критично"},
+    {t:"Не нужен"}
+  ]
+},
+{
+  q:"Планируешь использовать планшет вместо ноутбука с клавиатурой?",
+  opts:[
+    {t:"Да, нужна магнитная клавиатура и полноценная работа"},
+    {t:"Иногда, для простых задач"},
+    {t:"Нет, клавиатура не нужна"}
+  ]
+},
+{
+  q:"Собираешься играть в требовательные игры?",
+  opts:[
+    {t:"Да, в тяжёлые современные игры"},
+    {t:"Да, но в нетребовательные"},
+    {t:"Иногда, в казуальные"},
+    {t:"Не собираюсь"}
+  ]
+},
+{
+  q:"Какой тип экрана предпочитаешь?",
+  opts:[
+    {t:"OLED/AMOLED (сочные цвета)"},
+    {t:"IPS/LCD (достаточно)"},
+    {t:"Без разницы, не разбираюсь"}
+  ]
+},
+{
+  q:"Какая частота обновления экрана нужна?",
+  opts:[
+    {t:"60 Гц (стандарт)"},
+    {t:"90 Гц"},
+    {t:"120 Гц и более (плавно)"},
+    {t:"Без разницы"}
+  ]
+},
+{
+  q:"Что важнее по автономности?",
+  opts:[
+    {t:"Максимальное время работы от батареи"},
+    {t:"Не критично, обычно рядом розетка"},
+    {t:"Быстрая зарядка важнее длительности"}
+  ]
+},
+{
+  q:"Сколько памяти нужно?",
+  opts:[
+    {t:"64–128 ГБ"},
+    {t:"256 ГБ"},
+    {t:"512 ГБ и больше"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Есть ли предпочтения по бренду?",
+  opts:[
+    {t:"Apple"},
+    {t:"Samsung"},
+    {t:"Xiaomi"},
+    {t:"Lenovo"},
+    {t:"Huawei"},
+    {t:"Honor"},
+    {t:"Microsoft Surface"},
+    {t:"Без разницы, важны характеристики"}
+  ]
+},
+{
+  q:"Насколько важны вес и портативность?",
+  opts:[
+    {t:"Очень важно, ношу с собой каждый день"},
+    {t:"Важно, но не критично"},
+    {t:"Не важно, обычно дома"}
+  ]
+},
+{
+  q:"Твой главный приоритет?",
+  opts:[
+    {t:"Учёба и заметки"},
+    {t:"Работа и документы"},
+    {t:"Замена ноутбука"},
+    {t:"Развлечения и медиа"},
+    {t:"Рисование и творчество"},
+    {t:"Топ за свои деньги"}
+  ]
+},
+{
+  q:"Как часто меняешь планшет?",
+  opts:[
+    {t:"Раз в 1–2 года"},
+    {t:"Раз в 3–4 года"},
+    {t:"Раз в 5 лет и дольше"},
+    {t:"Когда сломается"}
+  ]
+}
+];
+
+const QUESTIONS_TVBOX = [
+{
+  q:"Какой бюджет ты рассматриваешь на приставку?",
+  opts:[
+    {t:"До 2 000 ₽"},
+    {t:"2 000–4 000 ₽"},
+    {t:"4 000–7 000 ₽"},
+    {t:"7 000–12 000 ₽"},
+    {t:"Бюджет не важен, главное качество"}
+  ]
+},
+{
+  q:"Какую платформу предпочитаешь?",
+  opts:[
+    {t:"Google TV / Android TV (чистый)"},
+    {t:"Яндекс с Алисой"},
+    {t:"Apple TV (экосистема Apple)"},
+    {t:"Без разницы"}
+  ]
+},
+{
+  q:"Для чего в основном нужна приставка?",
+  opts:[
+    {t:"Смотреть YouTube и стриминги (фильмы, сериалы)"},
+    {t:"IPTV и телеканалы"},
+    {t:"Игры (облачные или через эмуляторы)"},
+    {t:"Управление умным домом"},
+    {t:"Всего понемногу"}
+  ]
+},
+{
+  q:"Насколько важно качество видео?",
+  opts:[
+    {t:"4K HDR обязательно"},
+    {t:"Full HD вполне достаточно"},
+    {t:"Не важно, не разбираюсь"}
+  ]
+},
+{
+  q:"Важна ли поддержка Dolby Vision и HDR10+?",
+  opts:[
+    {t:"Да, хочу максимальное качество картинки"},
+    {t:"Было бы неплохо"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Сколько оперативной памяти нужно?",
+  opts:[
+    {t:"1–2 ГБ, для простых задач"},
+    {t:"2–4 ГБ"},
+    {t:"4 ГБ и больше"},
+    {t:"Не разбираюсь, на твоё усмотрение"}
+  ]
+},
+{
+  q:"Насколько важна скорость Wi-Fi и наличие LAN-порта?",
+  opts:[
+    {t:"Обязательно Wi-Fi 6 и/или порт Ethernet"},
+    {t:"Обычного Wi-Fi хватит"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Нужен ли голосовой пульт и голосовой помощник?",
+  opts:[
+    {t:"Да, это важно для удобства"},
+    {t:"Было бы неплохо"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Собираешься играть на приставке в игры?",
+  opts:[
+    {t:"Да, через облачный гейминг или эмуляторы"},
+    {t:"Иногда, в простые игры"},
+    {t:"Не собираюсь"}
+  ]
+},
+{
+  q:"Важна ли интеграция с умным домом?",
+  opts:[
+    {t:"Да, управляю умными устройствами через приставку"},
+    {t:"Было бы неплохо"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Какой форм-фактор предпочитаешь?",
+  opts:[
+    {t:"Компактная флешка-стик в HDMI-порт"},
+    {t:"Обычная приставка-коробка"},
+    {t:"Без разницы"}
+  ]
+},
+{
+  q:"Есть ли предпочтения по бренду?",
+  opts:[
+    {t:"Xiaomi"},
+    {t:"Apple"},
+    {t:"Яндекс"},
+    {t:"SberBox (Сбер)"},
+    {t:"UGOOS"},
+    {t:"Без разницы, важны характеристики"}
+  ]
+},
+{
+  q:"Сколько встроенной памяти нужно?",
+  opts:[
+    {t:"8–16 ГБ, только для приложений"},
+    {t:"32 ГБ"},
+    {t:"64 ГБ и больше"},
+    {t:"Не важно"}
+  ]
+},
+{
+  q:"Твой главный приоритет?",
+  opts:[
+    {t:"Максимально дёшево и просто"},
+    {t:"Баланс цены и возможностей"},
+    {t:"Максимальная производительность для игр"},
+    {t:"Интеграция с экосистемой (Сбер/Яндекс)"},
+    {t:"Премиум для домашнего кинотеатра"}
+  ]
+},
+{
+  q:"Как часто меняешь технику такого рода?",
+  opts:[
+    {t:"Раз в 1–2 года"},
+    {t:"Раз в 3–4 года"},
+    {t:"Раз в 5 лет и дольше"},
+    {t:"Когда сломается"}
+  ]
+}
+];
+
+function Q(){
+  if(category === 'laptop') return QUESTIONS_LAPTOP;
+  if(category === 'tablet') return QUESTIONS_TABLET;
+  if(category === 'tvbox') return QUESTIONS_TVBOX;
+  return QUESTIONS_PHONE;
+}
 
 const BUCKET_LABEL = {
   iphone:"iPhone", samsung:"Samsung", xiaomi:"Xiaomi/Redmi",
@@ -1084,6 +1425,14 @@ function show(id){
 function setBattery(pct){
   document.getElementById('battFill').style.width = pct+'%';
   document.getElementById('battPct').textContent = Math.round(pct)+'%';
+  const shell = document.getElementById('battShell');
+  if(shell){
+    shell.classList.remove('battery-complete');
+    if(pct >= 100){
+      void shell.offsetWidth; // restart animation
+      shell.classList.add('battery-complete');
+    }
+  }
 }
 
 function updateClock(){
@@ -1096,6 +1445,33 @@ function updateClock(){
 }
 updateClock();
 setInterval(updateClock, 15000);
+
+/* Лёгкий 3D-тилт рамки телефона за курсором мыши (только десктоп, уважает reduced-motion) */
+(function initTilt(){
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
+  const phoneEl = document.querySelector('.phone');
+  if(!phoneEl) return;
+  // после entrance-анимации снимаем её, чтобы живой tilt-transform не конфликтовал с застывшим кадром анимации
+  phoneEl.addEventListener('animationend', (e)=>{
+    if(e.animationName === 'phoneEntrance') phoneEl.style.animation = 'none';
+  });
+  if(prefersReduced || isTouch) return;
+  const stageEl = document.querySelector('.stage');
+  if(!stageEl) return;
+  stageEl.addEventListener('mousemove', (e)=>{
+    const rect = phoneEl.getBoundingClientRect();
+    const relX = (e.clientX - rect.left) / rect.width - 0.5;
+    const relY = (e.clientY - rect.top) / rect.height - 0.5;
+    const maxTilt = 6;
+    phoneEl.style.setProperty('--tiltY', (relX * maxTilt).toFixed(2) + 'deg');
+    phoneEl.style.setProperty('--tiltX', (relY * -maxTilt).toFixed(2) + 'deg');
+  });
+  stageEl.addEventListener('mouseleave', ()=>{
+    phoneEl.style.setProperty('--tiltX', '0deg');
+    phoneEl.style.setProperty('--tiltY', '0deg');
+  });
+})();
 
 function trackEvent(name){
   try{
@@ -1115,6 +1491,16 @@ const INTRO_COPY = {
     title: "Какой ноутбук тебе подходит?",
     sub: "Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твои задачи и бюджет.",
     footer: "Не переплачивай за лишнее — получи честную подборку из всех актуальных ноутбуков."
+  },
+  tablet: {
+    title: "Какой планшет тебе подходит?",
+    sub: "Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твои задачи и бюджет.",
+    footer: "Не переплачивай за лишнее — получи честную подборку из всех актуальных планшетов."
+  },
+  tvbox: {
+    title: "Какая ТВ-приставка тебе подходит?",
+    sub: "Ответь на 15 вопросов и получи 3 модели, которые реально подходят под твой телевизор и задачи.",
+    footer: "Не переплачивай за лишнее — получи честную подборку из всех актуальных приставок."
   }
 };
 
@@ -1436,7 +1822,22 @@ const PHONES = [
 {name:"Huawei Pura 90 Ultra", brand:"huawei", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
 {name:"Realme GT8 Pro", brand:"realme", priceTier:2, size:"standard", display:"oled", refresh:144, ltpo:false, cameraScore:2, gamingScore:3, ip68:true, tags:["gaming","value","flagship"]},
 {name:"Nothing CMF Phone 2 Pro", brand:"nothing", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, enduranceBattery:true, tags:["value","stylish"]},
-{name:"Vivo X300 Ultra", brand:"vivo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]}
+{name:"Vivo X300 Ultra", brand:"vivo", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
+// НОВИНКИ ЛЕТА 2026 (проверено по актуальным обзорам)
+{name:"Xiaomi 17T", brand:"xiaomi", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:true, fastCharge:true, tags:["allround","photo"]},
+{name:"Xiaomi 17T Pro", brand:"xiaomi", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, fastCharge:true, tags:["flagship","photo"]},
+{name:"Redmi Note 15 Pro", brand:"xiaomi", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, fastCharge:true, tags:["value","photo"]},
+{name:"Redmi Note 15 Pro+", brand:"xiaomi", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, fastCharge:true, enduranceBattery:true, tags:["value","photo"]},
+{name:"Huawei Pura 90 Pro Max", brand:"huawei", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]},
+{name:"Samsung Galaxy A56 5G (2026)", brand:"samsung", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","allround"]},
+{name:"POCO F8 Pro", brand:"xiaomi", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:1, gamingScore:3, ip68:false, fastCharge:true, tags:["value","gaming"]},
+{name:"Realme 15 Pro", brand:"realme", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:false, tags:["value","photo"]},
+{name:"OPPO Reno15", brand:"oppo", priceTier:1, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish","photo"]},
+{name:"Honor 400 Pro", brand:"honor", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:2, ip68:false, pwmSafe:true, tags:["value","photo"]},
+{name:"Vivo Y19s", brand:"vivo", priceTier:0, size:"standard", display:"ips", refresh:90, ltpo:false, cameraScore:0, gamingScore:0, ip68:false, enduranceBattery:true, tags:["value"]},
+{name:"Motorola Edge 70", brand:"motorola", priceTier:2, size:"standard", display:"oled", refresh:120, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, tags:["stylish"]},
+{name:"Samsung Galaxy S25 Edge", brand:"samsung", priceTier:3, size:"standard", display:"oled", refresh:120, ltpo:true, cameraScore:2, gamingScore:2, ip68:true, tags:["flagship","compact"]},
+{name:"Google Pixel 9 (2026 discount)", brand:"pixel", priceTier:1, size:"compact", display:"oled", refresh:90, ltpo:false, cameraScore:2, gamingScore:1, ip68:true, longevitySupport:true, tags:["value","photo","compact"]}
 ];
 
 const BRAND_BY_ANSWER = ["apple","samsung","xiaomi","pixel","motorola","oneplus","realme","oppo","vivo","honor","huawei","nothing","sony","gaming","tecno","infinix","nubia","rugged"];
@@ -1719,7 +2120,30 @@ const LAPTOPS = [
 {name:"Huawei MateBook GT 14", brand:"huawei", priceTier:2, size:"compact", os:"windows", lightweight:true, gamingScore:1, creativeScore:1, tags:["allround","portable"]},
 {name:"MSI Prestige 13 AI Evo", brand:"msi", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["work","portable"]},
 {name:"HP Spectre x360 14 (2026)", brand:"hp", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, creativeScore:2, tags:["flagship","portable"]},
-{name:"Acer Swift Lite 16", brand:"acer", priceTier:1, size:"large", os:"windows", lightweight:true, tags:["value","study","work"]}
+{name:"Acer Swift Lite 16", brand:"acer", priceTier:1, size:"large", os:"windows", lightweight:true, tags:["value","study","work"]},
+// НОВИНКИ ЛЕТА 2026 (проверено по актуальным обзорам)
+{name:"Honor MagicBook X16 (2026)", brand:"other", priceTier:1, size:"large", os:"windows", lightweight:true, tags:["value","study","work"]},
+{name:"ASUS VivoBook Pro 14X OLED", brand:"asus", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:2, tags:["creative","allround","portable"]},
+{name:"Digma Pro Breve", brand:"other", priceTier:0, size:"standard", os:"windows", tags:["value","study","work"]},
+{name:"Acer Predator Helios Neo 16 (PHN16-73)", brand:"acer", priceTier:2, size:"large", os:"windows", gamingScore:3, discreteGPU:true, tags:["gaming","value"]},
+{name:"Thunderobot 911X Wild Hunter G2D", brand:"other", priceTier:1, size:"large", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"Azerty RB-1451", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"HUAWEI MateBook 14 (3:2)", brand:"huawei", priceTier:2, size:"compact", os:"windows", lightweight:true, creativeScore:1, tags:["work","allround"]},
+{name:"Lenovo ThinkBook 16p", brand:"lenovo", priceTier:3, size:"large", os:"windows", creativeScore:2, discreteGPU:true, tags:["creative","work"]},
+{name:"ASUS TUF Gaming A16", brand:"asus", priceTier:2, size:"large", os:"windows", gamingScore:2, discreteGPU:true, tags:["gaming","value"]},
+{name:"Infinix InBook Y3 Max", brand:"other", priceTier:0, size:"standard", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"Irbis NB120", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, tags:["value"]},
+// РОССИЙСКИЕ БЮДЖЕТНЫЕ БРЕНДЫ
+{name:"Digma EVE C5801", brand:"other", priceTier:0, size:"standard", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"Digma Pro Fortis M", brand:"other", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","work"]},
+{name:"Nerpa A342-14BB", brand:"other", priceTier:0, size:"compact", os:"windows", lightweight:true, durable:true, tags:["value","work"]},
+{name:"Irbis 15NBC1000", brand:"other", priceTier:0, size:"standard", os:"windows", tags:["value","work"]},
+// CHROMEBOOK
+{name:"ASUS Chromebook CX15", brand:"asus", priceTier:0, size:"standard", os:"windows", lightweight:true, durable:true, tags:["value","study"]},
+{name:"Acer Chromebook Plus 514", brand:"acer", priceTier:1, size:"standard", os:"windows", lightweight:true, tags:["value","study","work"]},
+{name:"Lenovo Chromebook Plus 14", brand:"lenovo", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","study"]},
+{name:"HP Chromebook x360 14", brand:"hp", priceTier:1, size:"compact", os:"windows", lightweight:true, tags:["value","study","portable"]},
+{name:"Acer Chromebook Plus Spin 714", brand:"acer", priceTier:3, size:"compact", os:"windows", lightweight:true, durable:true, tags:["flagship","work","portable"]}
 ];
 
 const LAPTOP_BRAND_BY_ANSWER = ["apple","dell","hp","lenovo","asus","acer","msi","huawei","xiaomi","microsoft","samsung","razer"];
@@ -1840,6 +2264,314 @@ function buildResultLaptop(){
   };
 }
 
+/* ============ ПОЛНАЯ БАЗА ПЛАНШЕТОВ (лето 2026) ============
+   priceTier: 0=до20000₽, 1=20-45к, 2=45-85к, 3=85-150к, 4=от150к
+   size: compact | standard | large      os: ipados | android | windows
+   stylusSupport/keyboardSupport/lightweight/durable: bool
+   gamingScore/creativeScore: 0-3
+   tags: value | flagship | study | work | creative | media | gaming | portable
+*/
+const TABLETS = [
+// APPLE
+{name:"iPad (10-го поколения)", brand:"apple", priceTier:1, size:"standard", os:"ipados", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study","media"]},
+{name:"iPad Air (M3)", brand:"apple", priceTier:2, size:"standard", os:"ipados", stylusSupport:true, lightweight:true, gamingScore:2, creativeScore:2, tags:["work","creative","allround"]},
+{name:"iPad mini", brand:"apple", priceTier:2, size:"compact", os:"ipados", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:1, tags:["media","portable"]},
+{name:"iPad Pro 11\" (M5)", brand:"apple", priceTier:3, size:"standard", os:"ipados", stylusSupport:true, keyboardSupport:true, lightweight:true, durable:true, gamingScore:3, creativeScore:3, tags:["flagship","creative","work"]},
+{name:"iPad Pro 13\" (M5)", brand:"apple", priceTier:4, size:"large", os:"ipados", stylusSupport:true, keyboardSupport:true, durable:true, gamingScore:3, creativeScore:3, tags:["flagship","creative","work"]},
+// SAMSUNG
+{name:"Samsung Galaxy Tab A9+", brand:"samsung", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Samsung Galaxy Tab S9 FE", brand:"samsung", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:2, tags:["value","study","creative"]},
+{name:"Samsung Galaxy Tab S10", brand:"samsung", priceTier:2, size:"standard", os:"android", stylusSupport:true, keyboardSupport:true, lightweight:true, gamingScore:2, creativeScore:2, tags:["work","creative"]},
+{name:"Samsung Galaxy Tab S10+", brand:"samsung", priceTier:3, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:2, tags:["work","creative"]},
+{name:"Samsung Galaxy Tab S11 Ultra", brand:"samsung", priceTier:4, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, durable:true, gamingScore:3, creativeScore:3, tags:["flagship","creative","work"]},
+// XIAOMI
+{name:"Xiaomi Redmi Pad SE", brand:"xiaomi", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Xiaomi Redmi Pad 2", brand:"xiaomi", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Xiaomi Pad 7", brand:"xiaomi", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:3, creativeScore:1, tags:["value","gaming","media"]},
+{name:"Xiaomi Pad 7 Pro", brand:"xiaomi", priceTier:2, size:"standard", os:"android", stylusSupport:true, keyboardSupport:true, lightweight:true, gamingScore:3, creativeScore:2, tags:["value","gaming","work"]},
+{name:"Xiaomi Pad 8 Pro", brand:"xiaomi", priceTier:3, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:3, creativeScore:2, tags:["flagship","gaming","work"]},
+// LENOVO
+{name:"Lenovo Tab M11", brand:"lenovo", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","media"]},
+{name:"Lenovo Xiaoxin Pad Pro", brand:"lenovo", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study"]},
+{name:"Lenovo Tab P11 Pro Gen 2", brand:"lenovo", priceTier:2, size:"standard", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:2, tags:["work","creative"]},
+{name:"Lenovo Tab P12", brand:"lenovo", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:2, tags:["work","media"]},
+{name:"Lenovo Tab Extreme", brand:"lenovo", priceTier:3, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:3, tags:["flagship","creative"]},
+{name:"Lenovo Legion Y700 (2025)", brand:"lenovo", priceTier:1, size:"compact", os:"android", lightweight:true, gamingScore:3, creativeScore:0, tags:["gaming","value","portable"]},
+// HUAWEI
+{name:"Huawei MatePad 11.5", brand:"huawei", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study"]},
+{name:"Huawei MatePad Pro 12.2", brand:"huawei", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:3, tags:["work","creative"]},
+{name:"Huawei MatePad 12 X", brand:"huawei", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:1, creativeScore:2, tags:["work","study"]},
+// HONOR
+{name:"Honor Pad X9A", brand:"honor", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","media"]},
+{name:"Honor Pad 10", brand:"honor", priceTier:1, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study"]},
+{name:"Honor MagicPad 2", brand:"honor", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:2, tags:["work","creative"]},
+// OTHER (POCO / OnePlus / Realme / Microsoft / бюджетные)
+{name:"POCO Pad M1", brand:"other", priceTier:0, size:"large", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"OnePlus Pad 3", brand:"other", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, gamingScore:2, creativeScore:2, tags:["work","allround"]},
+{name:"Realme Pad 2", brand:"other", priceTier:1, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:1, tags:["value","media"]},
+{name:"Microsoft Surface Pro 11", brand:"other", priceTier:4, size:"standard", os:"windows", stylusSupport:true, keyboardSupport:true, durable:true, gamingScore:2, creativeScore:3, tags:["flagship","work","creative"]},
+{name:"Digma Citi 1131 4G", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value"]},
+// НОВИНКИ ЛЕТА 2026 (проверено по актуальным обзорам)
+{name:"Samsung Galaxy Tab S10 Ultra", brand:"samsung", priceTier:4, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, durable:true, gamingScore:2, creativeScore:3, tags:["flagship","creative","work"]},
+{name:"OnePlus Pad Go 2", brand:"other", priceTier:1, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study"]},
+{name:"Lenovo Tab Plus", brand:"lenovo", priceTier:1, size:"large", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Xiaomi Pad 8", brand:"xiaomi", priceTier:2, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:2, creativeScore:2, tags:["value","work","creative"]},
+{name:"Honor Pad 9", brand:"honor", priceTier:1, size:"large", os:"android", lightweight:true, gamingScore:1, creativeScore:1, tags:["value","media"]},
+{name:"Huawei MatePad Air", brand:"huawei", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:1, creativeScore:1, tags:["value","study"]},
+{name:"Samsung Galaxy Tab A11", brand:"samsung", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","media"]},
+// БЮДЖЕТНЫЕ БРЕНДЫ СНГ
+{name:"Digma Citi 10", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value"]},
+{name:"Digma K10 PLUS", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","study"]},
+{name:"Digma Optima 1415D", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","media"]},
+{name:"Teclast T50", brand:"other", priceTier:1, size:"standard", os:"android", lightweight:true, gamingScore:2, creativeScore:1, tags:["value","gaming"]},
+{name:"Teclast P30", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Chuwi HiPad Air", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:1, creativeScore:0, tags:["value","media"]},
+{name:"Prestigio Grace", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value"]},
+{name:"DEXP Ultra", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","study"]},
+{name:"Irbis TZ190", brand:"other", priceTier:0, size:"compact", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value"]},
+{name:"LUNNEN Lite 10", brand:"other", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","study"]},
+{name:"Honor Pad X7", brand:"honor", priceTier:0, size:"standard", os:"android", lightweight:true, gamingScore:0, creativeScore:0, tags:["value","media"]},
+{name:"TCL NxtPaper 11", brand:"other", priceTier:1, size:"standard", os:"android", stylusSupport:true, lightweight:true, gamingScore:0, creativeScore:1, tags:["value","study","media"]},
+{name:"Huawei MatePad 11.5\"S", brand:"huawei", priceTier:2, size:"large", os:"android", stylusSupport:true, keyboardSupport:true, lightweight:true, gamingScore:1, creativeScore:2, tags:["work","study"]}
+];
+
+const TABLET_BRAND_BY_ANSWER = ["apple","samsung","xiaomi","lenovo","huawei","honor","other"];
+
+function scoreTablet(t){
+  let s = 0;
+  const budget = answers[0], size = answers[1], os = answers[2], usage = answers[3],
+        stylus = answers[4], keyboard = answers[5], gaming = answers[6], display = answers[7],
+        refresh = answers[8], battery = answers[9], memory = answers[10], brand = answers[11],
+        weight = answers[12], priority = answers[13], freq = answers[14];
+
+  if(budget !== null){
+    if(budget === 4){ s += t.priceTier * 0.6; }
+    else { const diff = Math.abs(t.priceTier - budget); s += Math.max(-12, 6 - diff * 4); }
+  }
+  if(size !== null && size !== 3){
+    const sizeMap = ["compact","standard","large"];
+    if(t.size === sizeMap[size]) s += 3;
+  }
+  if(os === 0 && t.os === "ipados") s += 6;
+  if(os === 1 && t.os === "android") s += 2;
+  if(os === 2 && t.os === "windows") s += 6;
+  const usageTagMap = ["study","work","creative","media","gaming","allround"];
+  if(usage !== null && usage < usageTagMap.length && t.tags.includes(usageTagMap[usage])) s += 2;
+  if(stylus === 0){ s += t.stylusSupport ? 3 : -2; }
+  if(stylus === 1 && t.stylusSupport) s += 1;
+  if(keyboard === 0){ s += t.keyboardSupport ? 3 : -1; }
+  if(gaming === 0) s += (t.gamingScore||0) * 2.5;
+  else if(gaming === 1) s += (t.gamingScore||0) * 1.2;
+  else if(gaming === 2) s += (t.gamingScore||0) * 0.6;
+  // display/refresh не завязаны жёстко на конкретные поля БД — учитываем через creative/gaming как прокси
+  if(refresh === 2) s += (t.gamingScore||0) * 0.5;
+  if(battery === 0 && t.lightweight) s += 1;
+  if(memory === 2 && t.priceTier >= 2) s += 0.5;
+  if(memory === 3 && t.priceTier >= 3) s += 0.5;
+  if(brand !== null && brand < TABLET_BRAND_BY_ANSWER.length && t.brand === TABLET_BRAND_BY_ANSWER[brand]) s += 6;
+  if(weight === 0 && t.lightweight) s += 2.5;
+  if(priority === 0 && t.tags.includes("study")) s += 2;
+  if(priority === 1 && t.tags.includes("work")) s += 2;
+  if(priority === 2 && t.keyboardSupport) s += 2;
+  if(priority === 3 && t.tags.includes("media")) s += 2;
+  if(priority === 4 && (t.creativeScore||0) >= 2) s += 2;
+  if(priority === 5 && t.tags.includes("value")) s += 2.5;
+  if(freq === 0 && t.tags.includes("flagship")) s += 1;
+  if(freq === 2 && t.durable) s += 2;
+  if(freq === 3 && t.tags.includes("value")) s += 1;
+
+  return s;
+}
+
+function buildResultTablet(){
+  const scored = TABLETS.map(t => ({ tablet: t, score: scoreTablet(t) })).sort((a, b) => b.score - a.score);
+  const brandChosen = answers[11] !== null && answers[11] < TABLET_BRAND_BY_ANSWER.length;
+  const picked = [];
+  const seenBrand = new Set();
+  for(const item of scored){
+    if(picked.length >= 3) break;
+    if(!brandChosen && seenBrand.has(item.tablet.brand)) continue;
+    picked.push(item.tablet);
+    seenBrand.add(item.tablet.brand);
+  }
+  if(picked.length < 3){
+    for(const item of scored){
+      if(picked.length >= 3) break;
+      if(!picked.includes(item.tablet)) picked.push(item.tablet);
+    }
+  }
+  const taglineFor = (t) => {
+    if(t.tags.includes("flagship")) return "Флагман";
+    if(t.tags.includes("value")) return "Топ за свои деньги";
+    if(t.tags.includes("gaming")) return "Для игр";
+    if(t.tags.includes("creative")) return "Для творчества";
+    if(t.keyboardSupport) return "Замена ноутбука";
+    return "Хороший баланс";
+  };
+  const reasonFor = (t) => {
+    const bits = [];
+    if(t.stylusSupport) bits.push("поддерживает стилус для заметок и рисования");
+    if(t.keyboardSupport) bits.push("есть клавиатура для полноценной работы");
+    if((t.gamingScore||0) >= 2) bits.push("тянет требовательные игры");
+    if((t.creativeScore||0) >= 2) bits.push("подходит для творческих задач");
+    if(t.lightweight) bits.push("лёгкий и удобно носить с собой");
+    if(t.durable) bits.push("качественная сборка");
+    if(bits.length === 0) bits.push("сбалансированные характеристики за свою цену");
+    return "Подходит по твоим ответам: " + bits.slice(0,3).join(", ") + ".";
+  };
+  return {
+    ok: true,
+    summary: "По твоим ответам мы сопоставили бюджет, задачи и приоритеты со всей базой планшетов лета 2026 года — вот три, что подошли лучше всего.",
+    items: picked.map(t => ({ name: t.name, tagline: taglineFor(t), reason: reasonFor(t) }))
+  };
+}
+
+/* ============ ПОЛНАЯ БАЗА ТВ-ПРИСТАВОК (лето 2026) ============
+   priceTier: 0=до2000₽, 1=2-4к, 2=4-7к, 3=7-12к, 4=от12к
+   formFactor: stick | box
+   platform: googletv | yandex | appletv
+   hdr/wifi6/lan/voiceRemote/smartHome: bool
+   gamingScore: 0-3
+   tags: value | flagship | media | gaming | smarthome | iptv
+*/
+const TVBOXES = [
+// XIAOMI
+{name:"Xiaomi Mi TV Stick 4K", brand:"xiaomi", priceTier:1, formFactor:"stick", platform:"googletv", hdr:true, wifi6:false, lan:false, voiceRemote:true, gamingScore:0, tags:["value","media"]},
+{name:"Xiaomi Mi Box S (3rd Gen)", brand:"xiaomi", priceTier:2, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:1, tags:["value","media","smarthome"]},
+{name:"Xiaomi TV Box S 3rd Gen 2", brand:"xiaomi", priceTier:2, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:1, tags:["flagship","media"]},
+// APPLE
+{name:"Apple TV 4K (3-го поколения)", brand:"apple", priceTier:4, formFactor:"box", platform:"appletv", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:2, tags:["flagship","media"]},
+// ЯНДЕКС
+{name:"Яндекс ТВ Станция Лайт", brand:"yandex", priceTier:1, formFactor:"box", platform:"yandex", hdr:false, wifi6:false, lan:false, voiceRemote:true, smartHome:true, gamingScore:0, tags:["value","smarthome"]},
+{name:"Яндекс ТВ Станция", brand:"yandex", priceTier:3, formFactor:"box", platform:"yandex", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:1, tags:["flagship","smarthome"]},
+// SBER
+{name:"SberBox", brand:"sber", priceTier:1, formFactor:"box", platform:"googletv", hdr:false, wifi6:false, lan:true, voiceRemote:true, smartHome:true, gamingScore:0, tags:["value","smarthome"]},
+{name:"SberBox 2", brand:"sber", priceTier:2, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:1, tags:["media","smarthome"]},
+// UGOOS
+{name:"UGOOS X5M PRO", brand:"ugoos", priceTier:3, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:2, tags:["flagship","media","iptv"]},
+{name:"UGOOS SK1", brand:"ugoos", priceTier:2, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:2, tags:["media","iptv"]},
+{name:"UGOOS X4 Pro", brand:"ugoos", priceTier:3, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:2, tags:["flagship","media"]},
+// ИГРОВЫЕ / ПРЕМИУМ ПЛАТФОРМЫ
+{name:"NVIDIA Shield TV Pro", brand:"other", priceTier:4, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:true, smartHome:true, gamingScore:3, tags:["flagship","gaming","media"]},
+{name:"Google Chromecast with Google TV (4K)", brand:"other", priceTier:1, formFactor:"stick", platform:"googletv", hdr:true, wifi6:false, lan:false, voiceRemote:true, gamingScore:0, tags:["value","media"]},
+{name:"Beelink GT-King Pro", brand:"other", priceTier:2, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:2, tags:["media","gaming"]},
+{name:"Zidoo Z9X", brand:"other", priceTier:3, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["flagship","media","iptv"]},
+// MECOOL
+{name:"Mecool KM2 Plus Deluxe", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:true, gamingScore:0, tags:["value","media"]},
+{name:"Mecool KM6 Deluxe Edition", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","media"]},
+{name:"Mecool KM9 Pro Classic", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+// БЮДЖЕТНЫЕ БЕЗЫМЯННЫЕ ANDROID BOX (доп.)
+{name:"X96Q", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:false, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"X96 Max+", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+{name:"Tanix H96 Max", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"MXQ Pro 4K", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:false, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"Vontar X3", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"Vontar X96S Stick 4K", brand:"other", priceTier:0, formFactor:"stick", platform:"googletv", hdr:true, wifi6:false, lan:false, voiceRemote:false, gamingScore:0, tags:["value","media"]},
+{name:"A95X F3 Air", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"HK1 MAX Plus", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+// БЮДЖЕТНЫЕ / БЕЗЫМЯННЫЕ ANDROID BOX
+{name:"X88 PRO X5M", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+{name:"KICKPI KP1", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value","media"]},
+{name:"Vontar X5", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+{name:"Movix GO", brand:"other", priceTier:0, formFactor:"stick", platform:"googletv", hdr:false, wifi6:false, lan:false, voiceRemote:false, gamingScore:0, tags:["value","media","iptv"]},
+{name:"Rombica Smart Box X1", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value","media"]},
+// ПРЕМИУМ
+{name:"Dune HD Homatics Box R 4K Plus", brand:"other", priceTier:4, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:2, tags:["flagship","media","iptv"]},
+{name:"Apple TV HD", brand:"apple", priceTier:2, formFactor:"box", platform:"appletv", hdr:false, wifi6:false, lan:true, voiceRemote:true, smartHome:true, gamingScore:1, tags:["media"]},
+{name:"МТС ТВ Приставка", brand:"other", priceTier:1, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:true, smartHome:false, gamingScore:0, tags:["value","iptv"]},
+{name:"T95 Super", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["value","iptv"]},
+{name:"WeChip W2", brand:"other", priceTier:0, formFactor:"box", platform:"googletv", hdr:true, wifi6:false, lan:true, voiceRemote:false, gamingScore:0, tags:["value"]},
+{name:"Formuler Z8 Pro", brand:"other", priceTier:3, formFactor:"box", platform:"googletv", hdr:true, wifi6:true, lan:true, voiceRemote:false, gamingScore:1, tags:["flagship","iptv"]}
+];
+
+const TVBOX_BRAND_BY_ANSWER = ["xiaomi","apple","yandex","sber","ugoos"];
+
+function scoreTVBox(b){
+  let s = 0;
+  const budget = answers[0], platform = answers[1], usage = answers[2], video = answers[3],
+        hdrAns = answers[4], ram = answers[5], network = answers[6], voice = answers[7],
+        gaming = answers[8], smartHomeAns = answers[9], form = answers[10], brand = answers[11],
+        storage = answers[12], priority = answers[13], freq = answers[14];
+
+  if(budget !== null){
+    if(budget === 4){ s += b.priceTier * 0.6; }
+    else { const diff = Math.abs(b.priceTier - budget); s += Math.max(-12, 6 - diff * 4); }
+  }
+  if(platform === 0 && b.platform === "googletv") s += 3;
+  if(platform === 1 && b.platform === "yandex") s += 6;
+  if(platform === 2 && b.platform === "appletv") s += 6;
+  const usageTagMap = ["media","iptv","gaming","smarthome"];
+  if(usage !== null && usage < usageTagMap.length && b.tags.includes(usageTagMap[usage])) s += 2;
+  if(video === 0){ s += b.hdr ? 2.5 : -1.5; }
+  if(hdrAns === 0){ s += b.hdr ? 2 : -1; }
+  if(network === 0){ s += (b.wifi6 || b.lan) ? 2.5 : -1; }
+  if(voice === 0){ s += b.voiceRemote ? 2 : -1; }
+  if(gaming === 0) s += (b.gamingScore||0) * 3;
+  else if(gaming === 1) s += (b.gamingScore||0) * 1.2;
+  if(smartHomeAns === 0){ s += b.smartHome ? 3 : -1; }
+  if(form === 0 && b.formFactor === "stick") s += 3;
+  if(form === 1 && b.formFactor === "box") s += 1.5;
+  if(brand !== null && brand < TVBOX_BRAND_BY_ANSWER.length && b.brand === TVBOX_BRAND_BY_ANSWER[brand]) s += 6;
+  if(storage === 2 && b.priceTier >= 2) s += 0.5;
+  if(priority === 0 && b.tags.includes("value")) s += 2.5;
+  if(priority === 2 && (b.gamingScore||0) >= 2) s += 2;
+  if(priority === 3 && b.smartHome) s += 2;
+  if(priority === 4 && b.tags.includes("flagship")) s += 2;
+  if(freq === 2 && b.tags.includes("flagship")) s += 1;
+  if(freq === 3 && b.tags.includes("value")) s += 1;
+
+  return s;
+}
+
+function buildResultTVBox(){
+  const scored = TVBOXES.map(b => ({ box: b, score: scoreTVBox(b) })).sort((a, c) => c.score - a.score);
+  const brandChosen = answers[11] !== null && answers[11] < TVBOX_BRAND_BY_ANSWER.length;
+  const picked = [];
+  const seenBrand = new Set();
+  for(const item of scored){
+    if(picked.length >= 3) break;
+    if(!brandChosen && seenBrand.has(item.box.brand)) continue;
+    picked.push(item.box);
+    seenBrand.add(item.box.brand);
+  }
+  if(picked.length < 3){
+    for(const item of scored){
+      if(picked.length >= 3) break;
+      if(!picked.includes(item.box)) picked.push(item.box);
+    }
+  }
+  const taglineFor = (b) => {
+    if(b.tags.includes("flagship")) return "Премиум";
+    if(b.tags.includes("value")) return "Топ за свои деньги";
+    if(b.tags.includes("smarthome")) return "Для умного дома";
+    if((b.gamingScore||0) >= 2) return "Для игр";
+    return "Хороший баланс";
+  };
+  const reasonFor = (b) => {
+    const bits = [];
+    if(b.hdr) bits.push("поддержка 4K HDR");
+    if(b.wifi6) bits.push("быстрый Wi-Fi 6");
+    if(b.lan) bits.push("есть порт Ethernet");
+    if(b.voiceRemote) bits.push("голосовой пульт");
+    if(b.smartHome) bits.push("управляет умным домом");
+    if((b.gamingScore||0) >= 2) bits.push("тянет игры через облако/эмуляторы");
+    if(bits.length === 0) bits.push("сбалансированные характеристики за свою цену");
+    return "Подходит по твоим ответам: " + bits.slice(0,3).join(", ") + ".";
+  };
+  return {
+    ok: true,
+    summary: "По твоим ответам мы сопоставили бюджет, задачи и приоритеты со всей базой ТВ-приставок лета 2026 года — вот три, что подошли лучше всего.",
+    items: picked.map(b => ({ name: b.name, tagline: taglineFor(b), reason: reasonFor(b) }))
+  };
+}
+
+function resolveBuildResult(){
+  if(category === 'laptop') return buildResultLaptop();
+  if(category === 'tablet') return buildResultTablet();
+  if(category === 'tvbox') return buildResultTVBox();
+  return buildResult();
+}
+
 /* ============ ANALYSIS (rule-based, работает офлайн от ИИ, без внешних запросов) ============ */
 function beginAnalysis(){
   show('view-analyzing');
@@ -1854,7 +2586,7 @@ function beginAnalysis(){
   let i=0;
   const interval = setInterval(()=>{ i=(i+1)%msgs.length; sub.textContent = msgs[i]; }, 700);
 
-  aiResultCache = category === 'laptop' ? buildResultLaptop() : buildResult();
+  aiResultCache = resolveBuildResult();
 
   setTimeout(()=>{
     clearInterval(interval);
@@ -1881,13 +2613,14 @@ function verifySub(){
 }
 
 function renderResult(){
-  const res = aiResultCache || (category === 'laptop' ? buildResultLaptop() : buildResult());
+  const res = aiResultCache || resolveBuildResult();
   document.getElementById('resultSummary').textContent = res.summary;
   const wrap = document.getElementById('phoneCards');
   wrap.innerHTML='';
   res.items.slice(0,3).forEach((p, i)=>{
     const card = document.createElement('div');
     card.className='phone-card';
+    card.style.setProperty('--card-delay', (i * 0.12) + 's');
     card.innerHTML = `
       <span class="rank">№${i+1}</span>
       <h3>${escapeHtml(p.name)}</h3>
