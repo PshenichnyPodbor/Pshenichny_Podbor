@@ -677,7 +677,14 @@ h1.display{
   font-size:11.5px; font-weight:600; color:var(--coral);
   text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;
 }
-.phone-card p{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0;}
+.phone-card p{font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0 0 12px;}
+.buy-btn{
+  display:block; text-align:center; text-decoration:none; font-family:'Inter'; font-weight:700; font-size:12.5px;
+  color:#1A0F00; background:var(--coral); border-radius:12px; padding:10px 12px; transition:filter .15s, transform .1s;
+}
+.buy-btn:hover{filter:brightness(1.08);}
+.buy-btn:active{transform:scale(.98);}
+.affiliate-note{font-size:10.5px; color:var(--ink-soft); text-align:center; margin-top:10px; line-height:1.5;}
 .err-note{font-size:11px; color:var(--ink-soft); text-align:center; margin-top:10px;}
 
 .social-block{
@@ -896,6 +903,7 @@ h1.display{
               <p class="result-summary" id="resultSummary">Собираю итог…</p>
             </div>
             <div id="phoneCards"></div>
+            <p class="affiliate-note hidden" id="affiliateNote">Ссылки на AliExpress — партнёрские: если купишь по ним, каналу капнет небольшой процент, тебе это ничего не стоит.</p>
 
             <div class="social-block">
               <p class="social-title">Хочешь узнать больше об этих моделях, увидеть тесты и обзоры?</p>
@@ -2753,6 +2761,9 @@ function verifySub(){
   }, 1900);
 }
 
+// Партнёрская ссылка (AliExpress) — одна общая для всех категорий и моделей
+const AFFILIATE_LINK = "https://s.click.aliexpress.com/e/_EQMrGa2";
+
 function renderResult(){
   const res = aiResultCache || resolveBuildResult();
   document.getElementById('resultSummary').textContent = res.summary;
@@ -2767,9 +2778,12 @@ function renderResult(){
       <h3>${escapeHtml(p.name)}</h3>
       <div class="tagline">${escapeHtml(p.tagline||'')}</div>
       <p>${escapeHtml(p.reason||'')}</p>
+      <a class="buy-btn" href="${AFFILIATE_LINK}" target="_blank" rel="noopener sponsored" onclick="trackEvent('accessory-click-' + category)">Смотреть на AliExpress →</a>
     `;
     wrap.appendChild(card);
   });
+  const note = document.getElementById('affiliateNote');
+  if(note) note.classList.remove('hidden');
 }
 
 function escapeHtml(s){
