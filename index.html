@@ -1031,27 +1031,11 @@ const QUESTIONS_PHONE = [
   ]
 },
 {
-  q:"Есть ли у тебя предпочтения по бренду?",
+  q:"Какая платформа тебе нужна?",
   opts:[
-    {t:"Apple", w:{}},
-    {t:"Samsung", w:{}},
-    {t:"Xiaomi / Redmi / POCO", w:{}},
-    {t:"Google Pixel", w:{}},
-    {t:"Motorola", w:{}},
-    {t:"OnePlus", w:{}},
-    {t:"Realme", w:{}},
-    {t:"OPPO", w:{}},
-    {t:"Vivo", w:{}},
-    {t:"Honor", w:{}},
-    {t:"Huawei", w:{}},
-    {t:"Nothing", w:{}},
-    {t:"Sony Xperia", w:{}},
-    {t:"Игровой (ASUS ROG / RedMagic / Legion)", w:{}},
-    {t:"Tecno", w:{}},
-    {t:"Infinix", w:{}},
-    {t:"ZTE / Nubia", w:{}},
-    {t:"Защищённый, неубиваемый", w:{}},
-    {t:"Без разницы, важны характеристики", w:{}}
+    {t:"iOS (Apple)", w:{}},
+    {t:"Android (любой бренд)", w:{}},
+    {t:"Без разницы", w:{}}
   ]
 },
 {
@@ -1970,7 +1954,6 @@ const PHONES = [
 {name:"Huawei Mate 90", brand:"huawei", priceTier:4, size:"large", display:"oled", refresh:120, ltpo:true, cameraScore:3, gamingScore:2, ip68:true, enduranceBattery:true, tags:["flagship","photo"]}
 ];
 
-const BRAND_BY_ANSWER = ["apple","samsung","xiaomi","pixel","motorola","oneplus","realme","oppo","vivo","honor","huawei","nothing","sony","gaming","tecno","infinix","nubia","rugged"];
 const USAGE_TAG = ["work","social","gaming","photo","allround"];
 
 function scorePhone(p){
@@ -2023,8 +2006,6 @@ function scorePhone(p){
   if(battery === 0 && p.enduranceBattery) s += 2;
   if(battery === 1 && p.fastCharge) s += 2;
   if(battery === 2 && p.longevitySupport) s += 1;
-  // Бренд — прямое совпадение
-  if(brand !== null && brand < BRAND_BY_ANSWER.length && p.brand === BRAND_BY_ANSWER[brand]) s += 6;
   // Память
   if((memory === 2 || memory === 3) && p.priceTier >= 3) s += 0.5;
   // Главный приоритет
@@ -2043,19 +2024,26 @@ function scorePhone(p){
 }
 
 function buildResult(){
-  const scored = PHONES.map(p => ({ phone: p, score: scorePhone(p) }))
-                        .sort((a, b) => b.score - a.score);
+  // Жёсткий фильтр по платформе: iOS — только Apple, Android — все, кроме Apple
+  const platform = answers[11]; // 0=iOS, 1=Android, 2=без разницы
+  let pool = PHONES;
+  if(platform === 0) pool = PHONES.filter(p => p.brand === 'apple');
+  else if(platform === 1) pool = PHONES.filter(p => p.brand !== 'apple');
 
-  const brandChosen = answers[11] !== null && answers[11] < BRAND_BY_ANSWER.length;
+  const scored = pool.map(p => ({ phone: p, score: scorePhone(p) }))
+                      .sort((a, b) => b.score - a.score);
+
+  const maxPerBrand = 1; // всегда стараемся разнообразить бренды внутри выбранной платформы
   const picked = [];
-  const seenBrand = new Set();
+  const brandCount = new Map();
   for(const item of scored){
     if(picked.length >= 3) break;
-    if(!brandChosen && seenBrand.has(item.phone.brand)) continue; // без явного бренда — разнообразим подборку
+    const cnt = brandCount.get(item.phone.brand) || 0;
+    if(cnt >= maxPerBrand) continue;
     picked.push(item.phone);
-    seenBrand.add(item.phone.brand);
+    brandCount.set(item.phone.brand, cnt + 1);
   }
-  // если из-за фильтра разнообразия не набралось 3 — дозаполняем лучшими оставшимися
+  // если из-за лимита на бренд не набралось 3 — дозаполняем лучшими оставшимися
   if(picked.length < 3){
     for(const item of scored){
       if(picked.length >= 3) break;
@@ -2350,13 +2338,15 @@ function buildResultLaptop(){
                          .sort((a, b) => b.score - a.score);
 
   const brandChosen = answers[11] !== null && answers[11] < LAPTOP_BRAND_BY_ANSWER.length;
+  const maxPerBrand = brandChosen ? 2 : 1;
   const picked = [];
-  const seenBrand = new Set();
+  const brandCount = new Map();
   for(const item of scored){
     if(picked.length >= 3) break;
-    if(!brandChosen && seenBrand.has(item.laptop.brand)) continue;
+    const cnt = brandCount.get(item.laptop.brand) || 0;
+    if(cnt >= maxPerBrand) continue;
     picked.push(item.laptop);
-    seenBrand.add(item.laptop.brand);
+    brandCount.set(item.laptop.brand, cnt + 1);
   }
   if(picked.length < 3){
     for(const item of scored){
@@ -2516,13 +2506,15 @@ function scoreTablet(t){
 function buildResultTablet(){
   const scored = TABLETS.map(t => ({ tablet: t, score: scoreTablet(t) })).sort((a, b) => b.score - a.score);
   const brandChosen = answers[11] !== null && answers[11] < TABLET_BRAND_BY_ANSWER.length;
+  const maxPerBrand = brandChosen ? 2 : 1;
   const picked = [];
-  const seenBrand = new Set();
+  const brandCount = new Map();
   for(const item of scored){
     if(picked.length >= 3) break;
-    if(!brandChosen && seenBrand.has(item.tablet.brand)) continue;
+    const cnt = brandCount.get(item.tablet.brand) || 0;
+    if(cnt >= maxPerBrand) continue;
     picked.push(item.tablet);
-    seenBrand.add(item.tablet.brand);
+    brandCount.set(item.tablet.brand, cnt + 1);
   }
   if(picked.length < 3){
     for(const item of scored){
